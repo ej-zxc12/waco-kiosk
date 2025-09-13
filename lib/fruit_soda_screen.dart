@@ -57,12 +57,12 @@ class FruitSodaScreen extends StatelessWidget {
                 crossAxisSpacing: 25,
                 padding: const EdgeInsets.all(24),
                 children: [
-                  buildProductItem("Iced Americano", "assets/images/coffee_americano.png"),
-                  buildProductItem("Iced Latte", "assets/images/coffee_latte.png"),
-                  buildProductItem("Iced Caramel Macchiato", "assets/images/coffee_caramel.png"),
-                  buildProductItem("Iced Mocha", "assets/images/coffee_mocha.png"),
-                  buildProductItem("Iced Vanilla Latte", "assets/images/coffee_vanilla.png"),
-                  buildProductItem("Cold Brew", "assets/images/coffee_coldbrew.png"),
+
+                  buildProductItem("Strawberry", "assets/images/FruitSOda-removebg-preview.png"),
+                  buildProductItem("Blue Lemonade", "assets/images/FS blue lemonade.png"),
+                  buildProductItem("Blueberry", "assets/images/FS blue berry.png"),
+                  buildProductItem("Apple Green", "assets/images/FS apple green.png"),
+
                 ],
               ),
             ),

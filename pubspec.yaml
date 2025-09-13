@@ -30,8 +30,34 @@ flutter:
     - assets/images/FruitSOda-removebg-preview.png
     - assets/images/Waffle Oreo.png
     - assets/images/Fruit_yogurt-removebg-preview.png
+    - assets/images/FS blue lemonade.png
+    - assets/images/FS blue berry.png
+    - assets/images/FS apple green.png
+    - assets/images/FY blueberry.png
+    - assets/images/FY bluelemo.png
+    - assets/images/FY four.png
+    - assets/images/FY lychee.png
+    - assets/images/FY strawberry.png
+    - assets/images/Iced Americano.png
+    - assets/images/IC spanish latte.png
+    - assets/images/IC hazelnut.png
+    - assets/images/IC french vanilla.png
+    - assets/images/MT red velvet.png
+    - assets/images/MT okinawa.png
+    - assets/images/MT wintermelon.png
+    - assets/images/MT hokkaido.png
+    - assets/images/MT matcha.png
+    - assets/images/Waf mango.png
+    - assets/images/Waf choco oreo.png
+    - assets/images/Waf chocobanana.png
+    - assets/images/Waf strawberry.png
+    - assets/images/Waf blueberry.png
+
 
 flutter_launcher_icons:
   android: true
   ios: true
   image_path: "assets/images/wacologo.png"
+
+  
+
