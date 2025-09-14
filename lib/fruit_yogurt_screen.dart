@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'helpers.dart'; // for showCancelConfirmation
+import 'helpers.dart'; // ✅ Reuse AnimatedButton, AnimatedScaleButton, showCancelConfirmation
+import 'product_details.dart'; // ✅ reuse MilkTea ProductDetailsScreen
 
 class FruitYogurtScreen extends StatelessWidget {
   const FruitYogurtScreen({super.key});
@@ -12,7 +13,7 @@ class FruitYogurtScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            
+            /// HEADER
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
@@ -57,12 +58,12 @@ class FruitYogurtScreen extends StatelessWidget {
                 crossAxisSpacing: 25,
                 padding: const EdgeInsets.all(24),
                 children: [
-                  buildProductItem("Blueberry", "assets/images/FY blueberry.png"),
-                  buildProductItem("Blue Lemonade", "assets/images/FY bluelemo.png"),
-                  buildProductItem("Four Seasons", "assets/images/FY four.png"),
-                  buildProductItem("Lychee", "assets/images/FY lychee.png"),
-                  buildProductItem("Strawberry", "assets/images/FY strawberry.png"),
-                  buildProductItem("Apple Green", "assets/images/Fruit_yogurt-removebg-preview.png"),
+                  buildProductItem(context, "Strawberry", "assets/images/FY strawberry.png"),
+                  buildProductItem(context, "Blueberry", "assets/images/FY blueberry.png"),
+                  buildProductItem(context, "Lychee", "assets/images/FY lychee.png"),
+                  buildProductItem(context, "Four Seasons", "assets/images/FY four.png"),
+                  buildProductItem(context, "Blue Lemonade", "assets/images/FY bluelemo.png"),
+                  buildProductItem(context, "Apple Green", "assets/Fruit_yogurt-removebg-preview.png"),
                 ],
               ),
             ),
@@ -86,14 +87,26 @@ class FruitYogurtScreen extends StatelessWidget {
     );
   }
 
-  /// PRODUCT ITEM (image box + name below)
-  Widget buildProductItem(String title, String imagePath) {
+  /// PRODUCT ITEM (navigates to ProductDetailsScreen)
+  Widget buildProductItem(BuildContext context, String title, String imagePath) {
     return Column(
       children: [
         Expanded(
           child: AnimatedScaleButton(
             onTap: () {
-              debugPrint("$title selected");
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ProductDetailsScreen(
+                    productName: title,
+                    imagePath: imagePath,
+                    options: [
+                      {"label": "16oz", "price": 49},
+                      {"label": "22oz", "price": 59},
+                    ],
+                  ),
+                ),
+              );
             },
             child: Container(
               decoration: BoxDecoration(
@@ -129,118 +142,6 @@ class FruitYogurtScreen extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-/// 🔹 Animated Scale Button (for product items)
-class AnimatedScaleButton extends StatefulWidget {
-  final Widget child;
-  final VoidCallback onTap;
-
-  const AnimatedScaleButton({
-    super.key,
-    required this.child,
-    required this.onTap,
-  });
-
-  @override
-  State<AnimatedScaleButton> createState() => _AnimatedScaleButtonState();
-}
-
-class _AnimatedScaleButtonState extends State<AnimatedScaleButton> {
-  double _scale = 1.0;
-
-  void _onTapDown(TapDownDetails details) {
-    setState(() => _scale = 0.95);
-  }
-
-  void _onTapUp(TapUpDetails details) {
-    setState(() => _scale = 1.0);
-    widget.onTap();
-  }
-
-  void _onTapCancel() {
-    setState(() => _scale = 1.0);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: _onTapDown,
-      onTapUp: _onTapUp,
-      onTapCancel: _onTapCancel,
-      child: AnimatedScale(
-        scale: _scale,
-        duration: const Duration(milliseconds: 120),
-        curve: Curves.easeOut,
-        child: widget.child,
-      ),
-    );
-  }
-}
-
-/// 🔹 Animated Button (for Cancel Order)
-class AnimatedButton extends StatefulWidget {
-  final String label;
-  final VoidCallback onPressed;
-
-  const AnimatedButton({
-    super.key,
-    required this.label,
-    required this.onPressed,
-  });
-
-  @override
-  State<AnimatedButton> createState() => _AnimatedButtonState();
-}
-
-class _AnimatedButtonState extends State<AnimatedButton> {
-  double _scale = 1.0;
-
-  void _onTapDown(TapDownDetails details) {
-    setState(() => _scale = 0.97);
-  }
-
-  void _onTapUp(TapUpDetails details) {
-    setState(() => _scale = 1.0);
-    widget.onPressed();
-  }
-
-  void _onTapCancel() {
-    setState(() => _scale = 1.0);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: _onTapDown,
-      onTapUp: _onTapUp,
-      onTapCancel: _onTapCancel,
-      child: AnimatedScale(
-        scale: _scale,
-        duration: const Duration(milliseconds: 120),
-        curve: Curves.easeOut,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 18),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: Colors.black, width: 2),
-          ),
-          child: Center(
-            child: Text(
-              widget.label,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.2,
-                color: Colors.black,
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'helpers.dart'; // for showCancelConfirmation
+import 'waffle_details.dart'; // ✅ import details screen
 
 class WaffleScreen extends StatelessWidget {
   const WaffleScreen({super.key});
@@ -12,7 +13,7 @@ class WaffleScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            
+            /// HEADER
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
@@ -57,12 +58,19 @@ class WaffleScreen extends StatelessWidget {
                 crossAxisSpacing: 25,
                 padding: const EdgeInsets.all(24),
                 children: [
-                  buildProductItem("Mango", "assets/images/Waf mango.png"),
-                  buildProductItem("Choco Oreo", "assets/images/Waf choco oreo.png"),
-                  buildProductItem("Choco Banana", "assets/images/Waf chocobanana.png"),
-                  buildProductItem("Oreo", "assets/images/Waffle Oreo.png"),
-                  buildProductItem("Strawberry", "assets/images/Waf strawberry.png"),
-                  buildProductItem("Blueberry", "assets/images/Waf blueberry.png"),
+                  buildProductItem(context, "Mango", "assets/images/Waf mango.png", 79),
+                  buildProductItem(context, "Choco Oreo", "assets/images/Waf choco oreo.png", 79),
+                  buildProductItem(context, "Choco Banana", "assets/images/Waf chocobanana.png", 79),
+                  buildProductItem(context, "Oreo", "assets/images/Waffle Oreo.png", 79),
+                  buildProductItem(context, "Strawberry", "assets/images/Waf strawberry.png", 79),
+                  buildProductItem(context, "Blueberry", "assets/images/Waf blueberry.png", 79),
+                  buildProductItem(
+                    context,
+                    "Plain Waffle",
+                    "assets/images/plainwaffle.png",
+                    59,
+                    withCaramel: true, // ✅ caramel option only for plain
+                  ),
                 ],
               ),
             ),
@@ -75,7 +83,7 @@ class WaffleScreen extends StatelessWidget {
                 child: AnimatedButton(
                   label: "Cancel Order",
                   onPressed: () {
-                    showCancelConfirmation(context); // ✅ uses helper
+                    showCancelConfirmation(context);
                   },
                 ),
               ),
@@ -86,14 +94,24 @@ class WaffleScreen extends StatelessWidget {
     );
   }
 
-  /// PRODUCT ITEM (image box + name below)
-  Widget buildProductItem(String title, String imagePath) {
+  /// PRODUCT ITEM (image box + name below + navigation)
+  Widget buildProductItem(BuildContext context, String title, String imagePath, int basePrice, {bool withCaramel = false}) {
     return Column(
       children: [
         Expanded(
           child: AnimatedScaleButton(
             onTap: () {
-              debugPrint("$title selected");
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => WaffleDetailsScreen(
+                    title: title,
+                    imagePath: imagePath,
+                    basePrice: basePrice,
+                    withCaramel: withCaramel,
+                  ),
+                ),
+              );
             },
             child: Container(
               decoration: BoxDecoration(
@@ -129,118 +147,6 @@ class WaffleScreen extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-/// 🔹 Animated Scale Button (for product items)
-class AnimatedScaleButton extends StatefulWidget {
-  final Widget child;
-  final VoidCallback onTap;
-
-  const AnimatedScaleButton({
-    super.key,
-    required this.child,
-    required this.onTap,
-  });
-
-  @override
-  State<AnimatedScaleButton> createState() => _AnimatedScaleButtonState();
-}
-
-class _AnimatedScaleButtonState extends State<AnimatedScaleButton> {
-  double _scale = 1.0;
-
-  void _onTapDown(TapDownDetails details) {
-    setState(() => _scale = 0.95);
-  }
-
-  void _onTapUp(TapUpDetails details) {
-    setState(() => _scale = 1.0);
-    widget.onTap();
-  }
-
-  void _onTapCancel() {
-    setState(() => _scale = 1.0);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: _onTapDown,
-      onTapUp: _onTapUp,
-      onTapCancel: _onTapCancel,
-      child: AnimatedScale(
-        scale: _scale,
-        duration: const Duration(milliseconds: 120),
-        curve: Curves.easeOut,
-        child: widget.child,
-      ),
-    );
-  }
-}
-
-/// 🔹 Animated Button (for Cancel Order)
-class AnimatedButton extends StatefulWidget {
-  final String label;
-  final VoidCallback onPressed;
-
-  const AnimatedButton({
-    super.key,
-    required this.label,
-    required this.onPressed,
-  });
-
-  @override
-  State<AnimatedButton> createState() => _AnimatedButtonState();
-}
-
-class _AnimatedButtonState extends State<AnimatedButton> {
-  double _scale = 1.0;
-
-  void _onTapDown(TapDownDetails details) {
-    setState(() => _scale = 0.97);
-  }
-
-  void _onTapUp(TapUpDetails details) {
-    setState(() => _scale = 1.0);
-    widget.onPressed();
-  }
-
-  void _onTapCancel() {
-    setState(() => _scale = 1.0);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: _onTapDown,
-      onTapUp: _onTapUp,
-      onTapCancel: _onTapCancel,
-      child: AnimatedScale(
-        scale: _scale,
-        duration: const Duration(milliseconds: 120),
-        curve: Curves.easeOut,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 18),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: Colors.black, width: 2),
-          ),
-          child: Center(
-            child: Text(
-              widget.label,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.2,
-                color: Colors.black,
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

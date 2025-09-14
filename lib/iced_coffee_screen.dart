@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'helpers.dart'; // for showCancelConfirmation
+import 'product_details.dart'; // ✅ reuse MilkTea ProductDetailsScreen
 
 class IcedCoffeeScreen extends StatelessWidget {
   const IcedCoffeeScreen({super.key});
@@ -7,12 +8,12 @@ class IcedCoffeeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5E6D3), // Beige background
+      backgroundColor: const Color(0xFFF5E6D3),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// HEADER (Iced Coffee + Back Button)
+            /// HEADER
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
@@ -57,12 +58,11 @@ class IcedCoffeeScreen extends StatelessWidget {
                 crossAxisSpacing: 25,
                 padding: const EdgeInsets.all(24),
                 children: [
-                  buildProductItem("Iced Americano", "assets/images/Iced Americano.png"),
-                  buildProductItem("Spanish Latte", "assets/images/IC spanish latte.png"),
-                  buildProductItem("Hazelnut", "assets/images/IC hazelnut.png"),
-                  buildProductItem("Salted Caramel", "assets/images/Iced-Coffee_img-removebg-preview.png"),
-                  buildProductItem("French Vanilla", "assets/images/IC french vanilla.png"),
-
+                  buildProductItem(context, "Hazelnut", "assets/images/IC hazelnut.png"),
+                  buildProductItem(context, "Iced Americano", "assets/images/Iced Americano.png"),
+                  buildProductItem(context, "French Vanilla", "assets/images/IC french vanilla.png"),
+                  buildProductItem(context, "Spanish Latte", "assets/images/IC spanish latte.png"),
+                  buildProductItem(context, "Salted Caramel", "assets/images/Iced-Coffee_img-removebg-preview.png"),
                 ],
               ),
             ),
@@ -75,7 +75,7 @@ class IcedCoffeeScreen extends StatelessWidget {
                 child: AnimatedButton(
                   label: "Cancel Order",
                   onPressed: () {
-                    showCancelConfirmation(context); // ✅ uses helper
+                    showCancelConfirmation(context);
                   },
                 ),
               ),
@@ -86,14 +86,26 @@ class IcedCoffeeScreen extends StatelessWidget {
     );
   }
 
-  /// PRODUCT ITEM (image box + name below)
-  Widget buildProductItem(String title, String imagePath) {
+  /// PRODUCT ITEM
+  Widget buildProductItem(BuildContext context, String title, String imagePath) {
     return Column(
       children: [
         Expanded(
           child: AnimatedScaleButton(
             onTap: () {
-              debugPrint("$title selected");
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProductDetailsScreen(
+                    productName: title,
+                    imagePath: imagePath,
+                    options: [
+                      {"label": "12oz", "price": 49},
+                      {"label": "16oz", "price": 59},
+                    ],
+                  ),
+                ),
+              );
             },
             child: Container(
               decoration: BoxDecoration(
@@ -129,118 +141,6 @@ class IcedCoffeeScreen extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-/// 🔹 Animated Scale Button (for product items)
-class AnimatedScaleButton extends StatefulWidget {
-  final Widget child;
-  final VoidCallback onTap;
-
-  const AnimatedScaleButton({
-    super.key,
-    required this.child,
-    required this.onTap,
-  });
-
-  @override
-  State<AnimatedScaleButton> createState() => _AnimatedScaleButtonState();
-}
-
-class _AnimatedScaleButtonState extends State<AnimatedScaleButton> {
-  double _scale = 1.0;
-
-  void _onTapDown(TapDownDetails details) {
-    setState(() => _scale = 0.95);
-  }
-
-  void _onTapUp(TapUpDetails details) {
-    setState(() => _scale = 1.0);
-    widget.onTap();
-  }
-
-  void _onTapCancel() {
-    setState(() => _scale = 1.0);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: _onTapDown,
-      onTapUp: _onTapUp,
-      onTapCancel: _onTapCancel,
-      child: AnimatedScale(
-        scale: _scale,
-        duration: const Duration(milliseconds: 120),
-        curve: Curves.easeOut,
-        child: widget.child,
-      ),
-    );
-  }
-}
-
-/// 🔹 Animated Button (for Cancel Order)
-class AnimatedButton extends StatefulWidget {
-  final String label;
-  final VoidCallback onPressed;
-
-  const AnimatedButton({
-    super.key,
-    required this.label,
-    required this.onPressed,
-  });
-
-  @override
-  State<AnimatedButton> createState() => _AnimatedButtonState();
-}
-
-class _AnimatedButtonState extends State<AnimatedButton> {
-  double _scale = 1.0;
-
-  void _onTapDown(TapDownDetails details) {
-    setState(() => _scale = 0.97);
-  }
-
-  void _onTapUp(TapUpDetails details) {
-    setState(() => _scale = 1.0);
-    widget.onPressed();
-  }
-
-  void _onTapCancel() {
-    setState(() => _scale = 1.0);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: _onTapDown,
-      onTapUp: _onTapUp,
-      onTapCancel: _onTapCancel,
-      child: AnimatedScale(
-        scale: _scale,
-        duration: const Duration(milliseconds: 120),
-        curve: Curves.easeOut,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 18),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: Colors.black, width: 2),
-          ),
-          child: Center(
-            child: Text(
-              widget.label,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.2,
-                color: Colors.black,
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }
