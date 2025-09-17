@@ -206,12 +206,14 @@ class _AnimatedButtonState extends State<AnimatedButton> {
   }
 }
 
-/// 🔹 Expandable Section Widget
+/// 🔹 Expandable Section Widget (for MilkTea, Coffee, etc.)
 class ExpandableSection extends StatefulWidget {
   final String title;
   final List<Map<String, dynamic>> options;
   final bool multiSelect;
-  final Function(int total)? onTotalChanged; // ✅ callback
+
+  /// ✅ Updated: Pass both total and items
+  final Function(int total, List<Map<String, dynamic>> items)? onTotalChanged;
 
   const ExpandableSection({
     super.key,
@@ -234,7 +236,7 @@ class _ExpandableSectionState extends State<ExpandableSection> {
   @override
   void initState() {
     super.initState();
-    _quantities = List.generate(widget.options.length, (_) => 0); // start blank
+    _quantities = List.generate(widget.options.length, (_) => 0);
   }
 
   /// Compute total dynamically
@@ -244,6 +246,21 @@ class _ExpandableSectionState extends State<ExpandableSection> {
       total += _quantities[i] * (widget.options[i]['price'] as int);
     }
     return total;
+  }
+
+  /// Get selected items with quantities
+  List<Map<String, dynamic>> get selectedItems {
+    List<Map<String, dynamic>> items = [];
+    for (int i = 0; i < widget.options.length; i++) {
+      if (_quantities[i] > 0) {
+        items.add({
+          "label": widget.options[i]['label'],
+          "price": widget.options[i]['price'],
+          "qty": _quantities[i],
+        });
+      }
+    }
+    return items;
   }
 
   @override
@@ -292,7 +309,7 @@ class _ExpandableSectionState extends State<ExpandableSection> {
     );
   }
 
-  /// 🔹 Expanded Option List
+  /// Expanded Option List
   Widget _buildExpandedOptions() {
     return Container(
       width: double.infinity,
@@ -318,7 +335,7 @@ class _ExpandableSectionState extends State<ExpandableSection> {
     );
   }
 
-  /// 🔹 Quantity Controls (now calls onTotalChanged)
+  /// Quantity Controls
   Widget _buildQuantityControls(int index) {
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -328,10 +345,8 @@ class _ExpandableSectionState extends State<ExpandableSection> {
             setState(() {
               if (_quantities[index] > 0) _quantities[index]--;
             });
-
-            // ✅ Trigger callback
             if (widget.onTotalChanged != null) {
-              widget.onTotalChanged!(totalPrice);
+              widget.onTotalChanged!(totalPrice, selectedItems);
             }
           },
           icon: const Icon(Icons.remove_circle_outline),
@@ -343,10 +358,8 @@ class _ExpandableSectionState extends State<ExpandableSection> {
         IconButton(
           onPressed: () {
             setState(() => _quantities[index]++);
-
-            // ✅ Trigger callback
             if (widget.onTotalChanged != null) {
-              widget.onTotalChanged!(totalPrice);
+              widget.onTotalChanged!(totalPrice, selectedItems);
             }
           },
           icon: const Icon(Icons.add_circle_outline),

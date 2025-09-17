@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
 import 'dining_location.dart'; // For back navigation
-import 'Milktea_screen.dart'; // ✅ Milktea screen
-import 'iced_coffee_screen.dart'; // ✅ Iced Coffee screen
-import 'fruit_soda_screen.dart'; // ✅ Fruit Soda screen
-import 'fruit_yogurt_screen.dart'; // ✅ Fruit Yogurt screen
-import 'waffle_screen.dart'; // ✅ Waffle screen
+import 'Milktea_screen.dart';
+import 'iced_coffee_screen.dart';
+import 'fruit_soda_screen.dart';
+import 'fruit_yogurt_screen.dart';
+import 'waffle_screen.dart';
+import 'cart_screen.dart';
+import 'helpers.dart';
+
+/// 🔹 Global cart counter (can be updated anywhere in the app)
+ValueNotifier<int> cartItemCount = ValueNotifier<int>(0);
+
+/// 🔹 Global cart items list (accessible anywhere)
+List<Map<String, dynamic>> cartItems = [];
 
 class HomeMenu extends StatelessWidget {
   const HomeMenu({super.key});
@@ -17,7 +25,7 @@ class HomeMenu extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// HEADER (Menu + Back Button)
+            /// HEADER (Menu + Back Button + Cart Button with badge)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
@@ -54,7 +62,72 @@ class HomeMenu extends StatelessWidget {
                       letterSpacing: 1.5,
                     ),
                   ),
-                  const Spacer(flex: 2),
+                  const Spacer(),
+
+                  /// 🔹 Cart Button with Badge
+                  ValueListenableBuilder<int>(
+                    valueListenable: cartItemCount,
+                    builder: (context, count, _) {
+                      return Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      CartScreen(cartItems: cartItems), // ✅ FIXED
+                                ),
+                              );
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.brown, width: 2),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black26,
+                                    blurRadius: 4,
+                                    offset: const Offset(2, 3),
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.shopping_cart,
+                                color: Colors.brown,
+                                size: 28,
+                              ),
+                            ),
+                          ),
+
+                          /// 🔹 Badge Counter
+                          if (count > 0)
+                            Positioned(
+                              right: -4,
+                              top: -4,
+                              child: Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: const BoxDecoration(
+                                  color: Colors.red,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Text(
+                                  "$count",
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
@@ -106,7 +179,7 @@ class HomeMenu extends StatelessWidget {
                 child: AnimatedButton(
                   label: "Cancel Order",
                   onPressed: () {
-                    showCancelConfirmation(context); // ✅ use helper function
+                    showCancelConfirmation(context);
                   },
                 ),
               ),
@@ -195,224 +268,6 @@ class HomeMenu extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-/// 🔹 Kiosk-style Cancel Confirmation Popup
-Future<void> showCancelConfirmation(BuildContext context) async {
-  final result = await showDialog<bool>(
-    context: context,
-    barrierDismissible: false, // prevent tapping outside to close
-    builder: (context) {
-      return Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        backgroundColor: const Color(0xFFF5E6D3), // Beige background
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(
-                Icons.warning_amber_rounded,
-                color: Colors.redAccent,
-                size: 60,
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                "Cancel Order?",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              const SizedBox(height: 12),
-              const Text(
-                "Do you want to cancel your order?",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 30),
-
-              /// YES / NO Buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () => Navigator.pop(context, false),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.black,
-                        padding: const EdgeInsets.symmetric(vertical: 18),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          side: const BorderSide(color: Colors.black, width: 2),
-                        ),
-                      ),
-                      child: const Text(
-                        "No",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 20),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () => Navigator.pop(context, true),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF6B4226), // Brown
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 18),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                      ),
-                      child: const Text(
-                        "Yes",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      );
-    },
-  );
-
-  if (result == true) {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const DiningLocationScreen()),
-    );
-  }
-}
-
-
-/// 🔹 Animated Scale Button (for menu items)
-class AnimatedScaleButton extends StatefulWidget {
-  final Widget child;
-  final VoidCallback onTap;
-
-  const AnimatedScaleButton({
-    super.key,
-    required this.child,
-    required this.onTap,
-  });
-
-  @override
-  State<AnimatedScaleButton> createState() => _AnimatedScaleButtonState();
-}
-
-class _AnimatedScaleButtonState extends State<AnimatedScaleButton> {
-  double _scale = 1.0;
-
-  void _onTapDown(TapDownDetails details) {
-    setState(() => _scale = 0.95);
-  }
-
-  void _onTapUp(TapUpDetails details) {
-    setState(() => _scale = 1.0);
-    widget.onTap();
-  }
-
-  void _onTapCancel() {
-    setState(() => _scale = 1.0);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: _onTapDown,
-      onTapUp: _onTapUp,
-      onTapCancel: _onTapCancel,
-      child: AnimatedScale(
-        scale: _scale,
-        duration: const Duration(milliseconds: 120),
-        curve: Curves.easeOut,
-        child: widget.child,
-      ),
-    );
-  }
-}
-
-/// 🔹 Animated Button (for Cancel Order)
-class AnimatedButton extends StatefulWidget {
-  final String label;
-  final VoidCallback onPressed;
-
-  const AnimatedButton({
-    super.key,
-    required this.label,
-    required this.onPressed,
-  });
-
-  @override
-  State<AnimatedButton> createState() => _AnimatedButtonState();
-}
-
-class _AnimatedButtonState extends State<AnimatedButton> {
-  double _scale = 1.0;
-
-  void _onTapDown(TapDownDetails details) {
-    setState(() => _scale = 0.97);
-  }
-
-  void _onTapUp(TapUpDetails details) {
-    setState(() => _scale = 1.0);
-    widget.onPressed();
-  }
-
-  void _onTapCancel() {
-    setState(() => _scale = 1.0);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: _onTapDown,
-      onTapUp: _onTapUp,
-      onTapCancel: _onTapCancel,
-      child: AnimatedScale(
-        scale: _scale,
-        duration: const Duration(milliseconds: 120),
-        curve: Curves.easeOut,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 18),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: Colors.black, width: 2),
-          ),
-          child: Center(
-            child: Text(
-              widget.label,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.2,
-                color: Colors.black,
-              ),
-            ),
-          ),
         ),
       ),
     );
