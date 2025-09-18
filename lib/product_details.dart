@@ -39,32 +39,36 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     }
 
     for (var item in _selectedItems) {
-      final existingIndex =
-          cartItems.indexWhere((e) => e["name"] == item["name"]);
+      final sizeLabel = item["label"]?.toString() ?? "";
+
+      final displayName = sizeLabel.isNotEmpty
+          ? "${widget.productName} ($sizeLabel)"
+          : widget.productName;
+
+      final newItem = {
+        "name": displayName,
+        "price": item["price"],
+        "qty": item["qty"],
+        "size": sizeLabel,
+        "imagePath": widget.imagePath,
+      };
+
+      final existingIndex = cartItems.indexWhere(
+        (e) => e["name"] == newItem["name"] && e["size"] == newItem["size"],
+      );
 
       if (existingIndex != -1) {
-        // ✅ If item already in cart, increase qty
-        cartItems[existingIndex]["qty"] += item["qty"];
+        cartItems[existingIndex]["qty"] += newItem["qty"] as int;
       } else {
-        // ✅ Add new item
-        cartItems.add(Map<String, dynamic>.from(item));
+        cartItems.add(newItem);
       }
     }
 
-    // ✅ Update global cart count
     cartItemCount.value =
         cartItems.fold<int>(0, (sum, item) => sum + (item["qty"] as int));
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("✅ Added to cart. Total ₱$_grandTotal")),
-    );
-
-    // ✅ Navigate to CartScreen
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => CartScreen(cartItems: cartItems),
-      ),
+      const SnackBar(content: Text("✅ Item(s) added to cart.")),
     );
   }
 
@@ -76,45 +80,71 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         title: Text(widget.productName),
         backgroundColor: const Color(0xFF6B4226),
         actions: [
-          // ✅ Cart Icon in AppBar
           ValueListenableBuilder<int>(
             valueListenable: cartItemCount,
             builder: (context, count, _) {
-              return Stack(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.shopping_cart),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              CartScreen(cartItems: cartItems),
-                        ),
-                      );
-                    },
-                  ),
-                  if (count > 0)
-                    Positioned(
-                      right: 6,
-                      top: 6,
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: const BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Text(
-                          "$count",
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
+              return Padding(
+                padding: const EdgeInsets.only(right: 12.0, top: 6, bottom: 6),
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    // ✅ Custom CartButton with WaCo bag logo
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                CartScreen(cartItems: cartItems),
                           ),
+                        );
+                      },
+                      borderRadius: BorderRadius.circular(16),
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: Colors.brown, width: 2),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.brown.withOpacity(0.3),
+                              blurRadius: 6,
+                              offset: const Offset(2, 3),
+                            ),
+                          ],
+                        ),
+                        child: Image.asset(
+                          "assets/images/cart_logo.png", // ✅ updated (no space in filename)
+                          height: 30,
+                          fit: BoxFit.contain,
                         ),
                       ),
                     ),
-                ],
+
+                    // ✅ Red badge
+                    if (count > 0)
+                      Positioned(
+                        right: -4,
+                        top: -4,
+                        child: Container(
+                          padding: const EdgeInsets.all(5),
+                          decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Text(
+                            "$count",
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               );
             },
           ),
@@ -171,6 +201,37 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             AnimatedButton(
               label: "Add to Cart",
               onPressed: () => _placeOrder(context),
+            ),
+
+            const SizedBox(height: 16),
+
+            // ✅ Add More Items button (still uses default cart icon, can update if needed)
+            Center(
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HomeMenu(),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.add_shopping_cart, color: Colors.brown),
+                label: const Text(
+                  "Add More Items",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.brown,
+                  ),
+                ),
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: Colors.brown, width: 2),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
             ),
           ],
         ),

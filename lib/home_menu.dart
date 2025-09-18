@@ -5,8 +5,8 @@ import 'iced_coffee_screen.dart';
 import 'fruit_soda_screen.dart';
 import 'fruit_yogurt_screen.dart';
 import 'waffle_screen.dart';
-import 'cart_screen.dart';
 import 'helpers.dart';
+import 'cart_button.dart'; // ✅ import your custom cart button
 
 /// 🔹 Global cart counter (can be updated anywhere in the app)
 ValueNotifier<int> cartItemCount = ValueNotifier<int>(0);
@@ -64,68 +64,11 @@ class HomeMenu extends StatelessWidget {
                   ),
                   const Spacer(),
 
-                  /// 🔹 Cart Button with Badge
+                  /// 🔹 Use reusable CartButton
                   ValueListenableBuilder<int>(
                     valueListenable: cartItemCount,
                     builder: (context, count, _) {
-                      return Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      CartScreen(cartItems: cartItems), // ✅ FIXED
-                                ),
-                              );
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: Colors.brown, width: 2),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black26,
-                                    blurRadius: 4,
-                                    offset: const Offset(2, 3),
-                                  ),
-                                ],
-                              ),
-                              child: const Icon(
-                                Icons.shopping_cart,
-                                color: Colors.brown,
-                                size: 28,
-                              ),
-                            ),
-                          ),
-
-                          /// 🔹 Badge Counter
-                          if (count > 0)
-                            Positioned(
-                              right: -4,
-                              top: -4,
-                              child: Container(
-                                padding: const EdgeInsets.all(6),
-                                decoration: const BoxDecoration(
-                                  color: Colors.red,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Text(
-                                  "$count",
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                        ],
-                      );
+                      return CartButton(cartItems: cartItems);
                     },
                   ),
                 ],

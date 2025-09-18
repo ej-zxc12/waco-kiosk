@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'home_menu.dart'; // ✅ Import for cartItems & cartItemCount
+import 'home_menu.dart'; // ✅ Import global cartItems & cartItemCount
+import 'checkout_screen.dart'; // ✅ Checkout screen
 
 class CartScreen extends StatefulWidget {
   final List<Map<String, dynamic>> cartItems;
@@ -64,7 +65,7 @@ class _CartScreenState extends State<CartScreen> {
         cartItemCount.value = 0;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Cart has been cleared.")),
+        const SnackBar(content: Text("🗑 Cart has been cleared.")),
       );
     }
   }
@@ -72,21 +73,17 @@ class _CartScreenState extends State<CartScreen> {
   void _checkout() {
     if (cartItems.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Your cart is empty.")),
+        const SnackBar(content: Text("⚠️ Your cart is empty.")),
       );
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Checkout successful!")),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CheckoutScreen(cartItems: cartItems),
+      ),
     );
-
-    setState(() {
-      cartItems.clear();
-      cartItemCount.value = 0;
-    });
-
-    Navigator.pop(context);
   }
 
   int _calculateTotal() {
@@ -116,7 +113,7 @@ class _CartScreenState extends State<CartScreen> {
       body: cartItems.isEmpty
           ? const Center(
               child: Text(
-                "Your cart is empty.",
+                "🛒 Your cart is empty.",
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             )
@@ -129,15 +126,38 @@ class _CartScreenState extends State<CartScreen> {
                       final item = cartItems[index];
                       final itemTotal =
                           (item["price"] as int) * (item["qty"] as int);
+
+                      // ✅ Clean display: Always show Product (Size)
+                      String displayName = item["name"];
+                      if (item["size"] != null &&
+                          item["size"].toString().isNotEmpty) {
+                        if (!displayName.contains(item["size"])) {
+                          displayName = "${item["name"]} (${item["size"]})";
+                        }
+                      }
+
                       return Card(
                         margin: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 8),
                         child: ListTile(
-                          leading: const Icon(Icons.fastfood,
-                              color: Colors.brown, size: 32),
-                          title: Text(item["name"]),
+                          leading: item["imagePath"] != null
+                              ? Image.asset(
+                                  item["imagePath"],
+                                  width: 50,
+                                  height: 50,
+                                  fit: BoxFit.cover,
+                                )
+                              : const Icon(Icons.local_drink,
+                                  color: Colors.brown, size: 32),
+                          title: Text(
+                            displayName,
+                            style: const TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
                           subtitle: Text(
-                              "₱${item["price"]} × ${item["qty"]} = ₱$itemTotal"),
+                            "₱${item["price"]} × ${item["qty"]} = ₱$itemTotal",
+                            style: const TextStyle(fontSize: 14),
+                          ),
                           trailing: IconButton(
                             icon: const Icon(Icons.remove_circle,
                                 color: Colors.red),
@@ -158,32 +178,63 @@ class _CartScreenState extends State<CartScreen> {
                       topRight: Radius.circular(20),
                     ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  child: Column(
                     children: [
-                      Text(
-                        "Total: ₱$total",
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.brown,
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Total: ₱$total",
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.brown,
+                            ),
+                          ),
+                          ElevatedButton(
+                            onPressed: _checkout,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF6B4226),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 24, vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                            ),
+                            child: const Text(
+                              "Proceed to Checkout",
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ],
                       ),
-                      ElevatedButton(
-                        onPressed: _checkout,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF6B4226),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 24, vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
+                      const SizedBox(height: 10),
+                      OutlinedButton.icon(
+                        onPressed: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const HomeMenu(),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.add_shopping_cart,
+                            color: Colors.brown),
+                        label: const Text(
+                          "Add More Items",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.brown,
                           ),
                         ),
-                        child: const Text(
-                          "Checkout",
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: Colors.brown, width: 2),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                       ),
                     ],

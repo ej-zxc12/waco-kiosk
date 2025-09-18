@@ -9,14 +9,11 @@ class CartButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(
+      clipBehavior: Clip.none,
       children: [
-        FloatingActionButton(
-          backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: const BorderSide(color: Colors.brown, width: 2),
-          ),
-          onPressed: () {
+        // ✅ Custom button with your logo
+        InkWell(
+          onTap: () {
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -24,15 +21,35 @@ class CartButton extends StatelessWidget {
               ),
             );
           },
-          child: Image.asset(
-            "assets/images/waco_bag.png", // ✅ bag icon
-            height: 35,
+          borderRadius: BorderRadius.circular(18),
+          child: Container(
+            padding: const EdgeInsets.all(12), // more space around the logo
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: Colors.brown, width: 2),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.brown.withOpacity(0.3),
+                  blurRadius: 6,
+                  offset: const Offset(2, 3),
+                ),
+              ],
+            ),
+            child: Image.asset(
+              "assets/images/cart_logo.png", // ✅ your custom logo
+              height: 40, // bigger & clearer
+              width: 40,
+              fit: BoxFit.contain,
+            ),
           ),
         ),
+
+        // ✅ Red badge with item count
         if (cartItems.isNotEmpty)
           Positioned(
-            right: 0,
-            top: 0,
+            right: -2,
+            top: -2,
             child: Container(
               padding: const EdgeInsets.all(6),
               decoration: const BoxDecoration(
@@ -40,9 +57,9 @@ class CartButton extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               child: Text(
-                "${cartItems.length}", // ✅ show count
+                "${cartItems.length}",
                 style: const TextStyle(
-                  fontSize: 12,
+                  fontSize: 13,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),

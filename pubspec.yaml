@@ -53,6 +53,7 @@ flutter:
     - assets/images/Waf strawberry.png
     - assets/images/Waf blueberry.png
     - assets/images/plainwaffle.png
+    - assets/images/cart_logo.png
 
 
 flutter_launcher_icons:
