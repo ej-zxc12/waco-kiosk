@@ -54,6 +54,8 @@ flutter:
     - assets/images/Waf blueberry.png
     - assets/images/plainwaffle.png
     - assets/images/cart_logo.png
+    - assets/images/counter.png
+    - assets/images/Cashless payment.png
 
 
 flutter_launcher_icons:

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'home_menu.dart'; // ✅ Import global cartItems & cartItemCount
-import 'checkout_screen.dart'; // ✅ Checkout screen
+import 'PaymentMethodScreen.dart'; // ✅ New screen for payment choice
 
 class CartScreen extends StatefulWidget {
   final List<Map<String, dynamic>> cartItems;
@@ -23,14 +23,21 @@ class _CartScreenState extends State<CartScreen> {
         cartItems.fold<int>(0, (sum, item) => sum + item["qty"] as int);
   }
 
-  void _removeItem(int index) {
+  void _increaseItem(int index) {
+    setState(() {
+      cartItems[index]["qty"] += 1;
+      cartItemCount.value =
+          cartItems.fold<int>(0, (sum, item) => sum + item["qty"] as int);
+    });
+  }
+
+  void _decreaseItem(int index) {
     setState(() {
       if (cartItems[index]["qty"] > 1) {
         cartItems[index]["qty"] -= 1;
       } else {
         cartItems.removeAt(index);
       }
-
       cartItemCount.value =
           cartItems.fold<int>(0, (sum, item) => sum + item["qty"] as int);
     });
@@ -71,17 +78,11 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   void _checkout() {
-    if (cartItems.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("⚠️ Your cart is empty.")),
-      );
-      return;
-    }
-
+    if (cartItems.isEmpty) return; // ✅ Safety check
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CheckoutScreen(cartItems: cartItems),
+        builder: (context) => PaymentMethodScreen(cartItems: cartItems), // ✅ Go to payment choice
       ),
     );
   }
@@ -96,6 +97,7 @@ class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
     final total = _calculateTotal();
+    final isCartEmpty = cartItems.isEmpty;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5E6D3),
@@ -110,7 +112,7 @@ class _CartScreenState extends State<CartScreen> {
           ),
         ],
       ),
-      body: cartItems.isEmpty
+      body: isCartEmpty
           ? const Center(
               child: Text(
                 "🛒 Your cart is empty.",
@@ -127,7 +129,6 @@ class _CartScreenState extends State<CartScreen> {
                       final itemTotal =
                           (item["price"] as int) * (item["qty"] as int);
 
-                      // ✅ Clean display: Always show Product (Size)
                       String displayName = item["name"];
                       if (item["size"] != null &&
                           item["size"].toString().isNotEmpty) {
@@ -154,14 +155,35 @@ class _CartScreenState extends State<CartScreen> {
                             style: const TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.bold),
                           ),
-                          subtitle: Text(
-                            "₱${item["price"]} × ${item["qty"]} = ₱$itemTotal",
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.remove_circle,
-                                color: Colors.red),
-                            onPressed: () => _removeItem(index),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "₱${item["price"]} × ${item["qty"]} = ₱$itemTotal",
+                                style: const TextStyle(fontSize: 14),
+                              ),
+                              const SizedBox(height: 6),
+                              Row(
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.remove_circle,
+                                        color: Colors.red),
+                                    onPressed: () => _decreaseItem(index),
+                                  ),
+                                  Text(
+                                    "${item["qty"]}",
+                                    style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.add_circle,
+                                        color: Colors.green),
+                                    onPressed: () => _increaseItem(index),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
                       );
@@ -192,9 +214,11 @@ class _CartScreenState extends State<CartScreen> {
                             ),
                           ),
                           ElevatedButton(
-                            onPressed: _checkout,
+                            onPressed: isCartEmpty ? null : _checkout, // ✅ Disabled when empty
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF6B4226),
+                              backgroundColor: isCartEmpty
+                                  ? Colors.grey // ✅ Greyed out when disabled
+                                  : const Color(0xFF6B4226),
                               foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 24, vertical: 14),
@@ -202,10 +226,15 @@ class _CartScreenState extends State<CartScreen> {
                                 borderRadius: BorderRadius.circular(14),
                               ),
                             ),
-                            child: const Text(
+                            child: Text(
                               "Proceed to Checkout",
                               style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: isCartEmpty
+                                    ? Colors.black54 // ✅ Muted text when disabled
+                                    : Colors.white,
+                              ),
                             ),
                           ),
                         ],
