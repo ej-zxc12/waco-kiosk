@@ -1,20 +1,26 @@
 import 'package:flutter/material.dart';
-import 'checkout_screen.dart'; // ✅ replace with your actual checkout import
 import 'home_menu.dart'; // ✅ if cancel should bring back home
+import 'receipt_screen.dart'; // ✅ show receipt after selecting payment
 
 class PaymentMethodScreen extends StatelessWidget {
   final List<Map<String, dynamic>> cartItems;
+  final String diningLocation; // ✅ pass from DiningLocationScreen
 
-  const PaymentMethodScreen({super.key, required this.cartItems});
+  const PaymentMethodScreen({
+    super.key,
+    required this.cartItems,
+    required this.diningLocation,
+  });
 
-  void _goToCheckout(BuildContext context, String method) {
+  void _goToReceipt(BuildContext context, String method) {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => CheckoutScreen(
+        builder: (context) => ReceiptScreen(
           cartItems: cartItems,
-          // ✅ you can pass method if checkout needs it
-          // paymentMethod: method, 
+          paymentMethod: method,
+          diningLocation: diningLocation,
+          orderNumber: DateTime.now().millisecondsSinceEpoch % 10000, // simple order no.
         ),
       ),
     );
@@ -23,7 +29,7 @@ class PaymentMethodScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5E6D3), // soft beige like DiningLocation
+      backgroundColor: const Color(0xFFF5E6D3), // soft beige
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -38,22 +44,22 @@ class PaymentMethodScreen extends StatelessWidget {
             ),
             const SizedBox(height: 40),
 
-            // Payment options
+            // Payment options styled like DiningLocationScreen
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // GCash
+                // Pay at Counter
                 GestureDetector(
-                  onTap: () => _goToCheckout(context, "Cashless"),
+                  onTap: () => _goToReceipt(context, "Pay at the Counter"),
                   child: Column(
                     children: [
                       Image.asset(
-                        "assets/images/Cashless payment.png", // ✅ change to your GCash asset
-                        width: 150,
+                        "assets/images/counter.png",
+                        width: 160,
                       ),
                       const SizedBox(height: 10),
                       const Text(
-                        "GCash",
+                        "Pay at the Counter",
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w600,
@@ -64,20 +70,20 @@ class PaymentMethodScreen extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(width: 40),
+                const SizedBox(width: 50),
 
-                // Cash
+                // Cashless
                 GestureDetector(
-                  onTap: () => _goToCheckout(context, "Pay at the Counter"),
+                  onTap: () => _goToReceipt(context, "Cashless"),
                   child: Column(
                     children: [
                       Image.asset(
-                        "assets/images/counter.png", // ✅ change to your Cash asset
-                        width: 150,
+                        "assets/images/Cashless payment.png",
+                        width: 160,
                       ),
                       const SizedBox(height: 10),
                       const Text(
-                        "Cash",
+                        "Cashless",
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w600,
@@ -90,24 +96,27 @@ class PaymentMethodScreen extends StatelessWidget {
               ],
             ),
 
-            const SizedBox(height: 60),
+            const SizedBox(height: 70),
 
-            // Cancel Order button
+            // Cancel Order button (kiosk style)
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 117, 116, 119), // ✅ kiosk-like red
+                backgroundColor: Colors.red.shade700, // ✅ kiosk-like red
                 foregroundColor: Colors.white,
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                    const EdgeInsets.symmetric(horizontal: 60, vertical: 22),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(18),
                 ),
+                elevation: 4,
               ),
               onPressed: () {
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const HomeMenu(),
+                    builder: (context) => HomeMenu(
+                      diningLocation: diningLocation, // ✅ keep dining location
+                    ),
                   ),
                   (route) => false,
                 );

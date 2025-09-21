@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dining_location.dart'; // For back navigation
-import 'Milktea_screen.dart';
+import 'milktea_screen.dart';
 import 'iced_coffee_screen.dart';
 import 'fruit_soda_screen.dart';
 import 'fruit_yogurt_screen.dart';
@@ -15,7 +15,9 @@ ValueNotifier<int> cartItemCount = ValueNotifier<int>(0);
 List<Map<String, dynamic>> cartItems = [];
 
 class HomeMenu extends StatelessWidget {
-  const HomeMenu({super.key});
+  final String diningLocation; // ✅ carry the dining location
+
+  const HomeMenu({super.key, required this.diningLocation});
 
   @override
   Widget build(BuildContext context) {
@@ -25,11 +27,12 @@ class HomeMenu extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// HEADER (Menu + Back Button + Cart Button with badge)
+            /// HEADER (Back + Dining Location + Cart Button with badge)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 children: [
+                  /// Back Button
                   GestureDetector(
                     onTap: () {
                       Navigator.pushReplacement(
@@ -53,22 +56,42 @@ class HomeMenu extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const Spacer(),
-                  const Text(
-                    "MENU",
-                    style: TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.5,
-                    ),
-                  ),
+
                   const Spacer(),
 
-                  /// 🔹 Use reusable CartButton
+                  /// Dining Location Display
+                  Column(
+                    children: [
+                      const Text(
+                        "MENU",
+                        style: TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.5,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        "Dining: $diningLocation", // ✅ show dining location
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.brown,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const Spacer(),
+
+                  /// 🔹 Use reusable CartButton and pass diningLocation
                   ValueListenableBuilder<int>(
                     valueListenable: cartItemCount,
                     builder: (context, count, _) {
-                      return CartButton(cartItems: cartItems);
+                      return CartButton(
+                        cartItems: cartItems,
+                        diningLocation: diningLocation, // ✅ pass along
+                      );
                     },
                   ),
                 ],
@@ -140,27 +163,37 @@ class HomeMenu extends StatelessWidget {
         if (title == "MILKTEA") {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const MilkteaScreen()),
+            MaterialPageRoute(
+              builder: (context) => MilkteaScreen(diningLocation: diningLocation),
+            ),
           );
         } else if (title == "ICED COFFEE") {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const IcedCoffeeScreen()),
+            MaterialPageRoute(
+              builder: (context) => IcedCoffeeScreen(diningLocation: diningLocation),
+            ),
           );
         } else if (title == "FRUIT SODA") {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const FruitSodaScreen()),
+            MaterialPageRoute(
+              builder: (context) => FruitSodaScreen(diningLocation: diningLocation),
+            ),
           );
         } else if (title == "FRUIT YOGURT") {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const FruitYogurtScreen()),
+            MaterialPageRoute(
+              builder: (context) => FruitYogurtScreen(diningLocation: diningLocation),
+            ),
           );
         } else if (title == "WAFFLE") {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const WaffleScreen()),
+            MaterialPageRoute(
+              builder: (context) => WaffleScreen(diningLocation: diningLocation),
+            ),
           );
         }
       },

@@ -1,3 +1,4 @@
+/*
 import 'package:flutter/material.dart';
 import 'home_menu.dart'; // ✅ for global cartItems & cartItemCount
 
@@ -165,4 +166,4 @@ class CheckoutScreen extends StatelessWidget {
       ),
     );
   }
-}
+}*/

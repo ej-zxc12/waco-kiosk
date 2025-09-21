@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'helpers.dart'; // for showCancelConfirmation
+import 'helpers.dart'; // for showCancelConfirmation, AnimatedButton, AnimatedScaleButton
 import 'product_details.dart'; // ✅ for product details screen
 
 class MilkteaScreen extends StatelessWidget {
-  const MilkteaScreen({super.key});
+  final String diningLocation; // ✅ keep dining context
+
+  const MilkteaScreen({super.key, required this.diningLocation});
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +89,7 @@ class MilkteaScreen extends StatelessWidget {
     );
   }
 
-  /// PRODUCT ITEM (with navigation to details screen)
+  /// PRODUCT ITEM (navigates to ProductDetailsScreen)
   Widget buildProductItem(BuildContext context, String title, String imagePath) {
     return Column(
       children: [
@@ -97,13 +99,14 @@ class MilkteaScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ProductDetailsScreen(
+                  builder: (_) => ProductDetailsScreen(
                     productName: title,
                     imagePath: imagePath,
                     options: [
                       {"label": "16oz", "price": 49},
                       {"label": "22oz", "price": 59},
                     ],
+                    diningLocation: diningLocation, // ✅ pass dining location
                   ),
                 ),
               );

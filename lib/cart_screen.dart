@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'home_menu.dart'; // ✅ Import global cartItems & cartItemCount
-import 'PaymentMethodScreen.dart'; // ✅ New screen for payment choice
+import 'PaymentMethodScreen.dart'; // ✅ Go directly to payment screen
 
 class CartScreen extends StatefulWidget {
   final List<Map<String, dynamic>> cartItems;
+  final String diningLocation; // ✅ added dining location
 
-  const CartScreen({super.key, required this.cartItems});
+  const CartScreen({
+    super.key,
+    required this.cartItems,
+    required this.diningLocation, // ✅ required
+  });
 
   @override
   State<CartScreen> createState() => _CartScreenState();
@@ -77,12 +82,15 @@ class _CartScreenState extends State<CartScreen> {
     }
   }
 
-  void _checkout() {
-    if (cartItems.isEmpty) return; // ✅ Safety check
+  void _goToPayment() {
+    if (cartItems.isEmpty) return;
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => PaymentMethodScreen(cartItems: cartItems), // ✅ Go to payment choice
+        builder: (context) => PaymentMethodScreen(
+          cartItems: cartItems,
+          diningLocation: widget.diningLocation, // ✅ pass dining location
+        ),
       ),
     );
   }
@@ -120,7 +128,24 @@ class _CartScreenState extends State<CartScreen> {
               ),
             )
           : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                /// 🔹 Dining Location Banner
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  color: Colors.brown.shade200,
+                  child: Text(
+                    "Dining Location: ${widget.diningLocation}",
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+
+                /// 🔹 Cart Items
                 Expanded(
                   child: ListView.builder(
                     itemCount: cartItems.length,
@@ -167,7 +192,7 @@ class _CartScreenState extends State<CartScreen> {
                                 children: [
                                   IconButton(
                                     icon: const Icon(Icons.remove_circle,
-                                        color: Colors.red),
+                                        color: Color(0xFF6B4226)),
                                     onPressed: () => _decreaseItem(index),
                                   ),
                                   Text(
@@ -178,7 +203,7 @@ class _CartScreenState extends State<CartScreen> {
                                   ),
                                   IconButton(
                                     icon: const Icon(Icons.add_circle,
-                                        color: Colors.green),
+                                        color: Color(0xFF6B4226)),
                                     onPressed: () => _increaseItem(index),
                                   ),
                                 ],
@@ -190,6 +215,8 @@ class _CartScreenState extends State<CartScreen> {
                     },
                   ),
                 ),
+
+                /// 🔹 Checkout Section
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -214,10 +241,10 @@ class _CartScreenState extends State<CartScreen> {
                             ),
                           ),
                           ElevatedButton(
-                            onPressed: isCartEmpty ? null : _checkout, // ✅ Disabled when empty
+                            onPressed: isCartEmpty ? null : _goToPayment,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: isCartEmpty
-                                  ? Colors.grey // ✅ Greyed out when disabled
+                                  ? Colors.grey
                                   : const Color(0xFF6B4226),
                               foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(
@@ -227,12 +254,14 @@ class _CartScreenState extends State<CartScreen> {
                               ),
                             ),
                             child: Text(
-                              "Proceed to Checkout",
+                              isCartEmpty
+                                  ? "Checkout Disabled"
+                                  : "Proceed to Payment",
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                                 color: isCartEmpty
-                                    ? Colors.black54 // ✅ Muted text when disabled
+                                    ? Colors.black54
                                     : Colors.white,
                               ),
                             ),
@@ -245,7 +274,9 @@ class _CartScreenState extends State<CartScreen> {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const HomeMenu(),
+                              builder: (context) => HomeMenu(
+                                diningLocation: widget.diningLocation, // ✅ keep dining info
+                              ),
                             ),
                           );
                         },

@@ -1,71 +1,64 @@
 import 'package:flutter/material.dart';
 import 'cart_screen.dart';
+import 'home_menu.dart'; // ✅ for global cartItems
 
 class CartButton extends StatelessWidget {
   final List<Map<String, dynamic>> cartItems;
+  final String diningLocation; // ✅ dining location passed from HomeMenu
 
-  const CartButton({super.key, required this.cartItems});
+  const CartButton({
+    super.key,
+    required this.cartItems,
+    required this.diningLocation,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Stack(
-      clipBehavior: Clip.none,
       children: [
-        // ✅ Custom button with your logo
-        InkWell(
-          onTap: () {
+        IconButton(
+          icon: Image.asset(
+            "assets/images/cart logo.png", // ✅ your uploaded cart image
+            width: 40,
+            height: 40,
+          ),
+          onPressed: () {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => CartScreen(cartItems: cartItems),
+                builder: (context) => CartScreen(
+                  cartItems: cartItems,
+                  diningLocation: diningLocation, // ✅ pass dining location
+                ),
               ),
             );
           },
-          borderRadius: BorderRadius.circular(18),
-          child: Container(
-            padding: const EdgeInsets.all(12), // more space around the logo
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: Colors.brown, width: 2),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.brown.withOpacity(0.3),
-                  blurRadius: 6,
-                  offset: const Offset(2, 3),
+        ),
+        Positioned(
+          right: 0,
+          top: 0,
+          child: ValueListenableBuilder<int>(
+            valueListenable: cartItemCount,
+            builder: (context, count, _) {
+              if (count == 0) return const SizedBox();
+              return Container(
+                padding: const EdgeInsets.all(5),
+                decoration: const BoxDecoration(
+                  color: Colors.red,
+                  shape: BoxShape.circle,
                 ),
-              ],
-            ),
-            child: Image.asset(
-              "assets/images/cart_logo.png", // ✅ your custom logo
-              height: 40, // bigger & clearer
-              width: 40,
-              fit: BoxFit.contain,
-            ),
+                child: Text(
+                  "$count",
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              );
+            },
           ),
         ),
-
-        // ✅ Red badge with item count
-        if (cartItems.isNotEmpty)
-          Positioned(
-            right: -2,
-            top: -2,
-            child: Container(
-              padding: const EdgeInsets.all(6),
-              decoration: const BoxDecoration(
-                color: Colors.red,
-                shape: BoxShape.circle,
-              ),
-              child: Text(
-                "${cartItems.length}",
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
       ],
     );
   }

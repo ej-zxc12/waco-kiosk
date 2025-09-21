@@ -7,12 +7,14 @@ class ProductDetailsScreen extends StatefulWidget {
   final String productName;
   final String imagePath;
   final List<Map<String, dynamic>> options; // e.g. MilkTea sizes
+  final String diningLocation; // ✅ keep dining location context
 
   const ProductDetailsScreen({
     super.key,
     required this.productName,
     required this.imagePath,
     required this.options,
+    required this.diningLocation,
   });
 
   @override
@@ -94,11 +96,13 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                CartScreen(cartItems: cartItems),
+                            builder: (context) => CartScreen(
+                              cartItems: cartItems,
+                              diningLocation: widget.diningLocation,
+                            ),
                           ),
                         );
-                      },
+                      }, // ✅ fixed (removed stray semicolon)
                       borderRadius: BorderRadius.circular(16),
                       child: Container(
                         padding: const EdgeInsets.all(10),
@@ -205,14 +209,16 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
             const SizedBox(height: 16),
 
-            // ✅ Add More Items button (still uses default cart icon, can update if needed)
+            // ✅ Add More Items button
             Center(
               child: OutlinedButton.icon(
                 onPressed: () {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const HomeMenu(),
+                      builder: (context) => HomeMenu(
+                        diningLocation: widget.diningLocation, // ✅ keep context
+                      ),
                     ),
                   );
                 },

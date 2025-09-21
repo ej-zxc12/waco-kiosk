@@ -3,7 +3,9 @@ import 'helpers.dart'; // ✅ Reuse AnimatedButton, AnimatedScaleButton, showCan
 import 'product_details.dart'; // ✅ reuse MilkTea ProductDetailsScreen
 
 class FruitYogurtScreen extends StatelessWidget {
-  const FruitYogurtScreen({super.key});
+  final String diningLocation; // ✅ keep dining location context
+
+  const FruitYogurtScreen({super.key, required this.diningLocation});
 
   @override
   Widget build(BuildContext context) {
@@ -104,6 +106,7 @@ class FruitYogurtScreen extends StatelessWidget {
                       {"label": "16oz", "price": 49},
                       {"label": "22oz", "price": 59},
                     ],
+                    diningLocation: diningLocation, // ✅ keep context
                   ),
                 ),
               );

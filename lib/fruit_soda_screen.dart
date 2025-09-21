@@ -3,7 +3,9 @@ import 'helpers.dart'; // ✅ Reuse AnimatedButton, AnimatedScaleButton, showCan
 import 'product_details.dart'; // ✅ for navigating to details screen
 
 class FruitSodaScreen extends StatelessWidget {
-  const FruitSodaScreen({super.key});
+  final String diningLocation; // ✅ keep dining location
+
+  const FruitSodaScreen({super.key, required this.diningLocation});
 
   @override
   Widget build(BuildContext context) {
@@ -102,6 +104,7 @@ class FruitSodaScreen extends StatelessWidget {
                       {"label": "16oz", "price": 59},
                       {"label": "22oz", "price": 69},
                     ],
+                    diningLocation: diningLocation, // ✅ keep context
                   ),
                 ),
               );

@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'helpers.dart'; // ✅ Reuse AnimatedButton
+import 'home_menu.dart'; // ✅ for global cartItems & cartItemCount
 
 class WaffleDetailsScreen extends StatefulWidget {
   final String title;
   final String imagePath;
   final int basePrice;
   final bool withCaramel; // ✅ special handling for plain waffle
+  final String diningLocation; // ✅ NEW: dining location
 
   const WaffleDetailsScreen({
     super.key,
     required this.title,
     required this.imagePath,
     required this.basePrice,
+    required this.diningLocation, // ✅ required now
     this.withCaramel = false,
   });
 
@@ -46,6 +49,36 @@ class _WaffleDetailsScreenState extends State<WaffleDetailsScreen> {
     }
   }
 
+  void _addToCart() {
+    if (_quantity == 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please select at least 1 waffle.")),
+      );
+      return;
+    }
+
+    // ✅ Add to global cart
+    cartItems.add({
+      "title": widget.title + (_addCaramel ? " + Caramel" : ""),
+      "imagePath": widget.imagePath,
+      "price": _unitPrice,
+      "qty": _quantity,
+      "diningLocation": widget.diningLocation,
+    });
+
+    cartItemCount.value++;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          "Added $_quantity x ${widget.title}${_addCaramel ? " + Caramel" : ""} to cart",
+        ),
+      ),
+    );
+
+    Navigator.pop(context); // ✅ Return to previous screen
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,7 +109,7 @@ class _WaffleDetailsScreenState extends State<WaffleDetailsScreen> {
 
             const SizedBox(height: 12),
 
-            /// PRODUCT NAME (under image ✅)
+            /// PRODUCT NAME
             Text(
               widget.title,
               style: const TextStyle(
@@ -154,25 +187,10 @@ class _WaffleDetailsScreenState extends State<WaffleDetailsScreen> {
 
             const SizedBox(height: 40),
 
-            /// ✅ Place Order Button
+            /// ✅ Add to Cart Button
             AnimatedButton(
-              label: "Place Order",
-              onPressed: () {
-                if (_quantity == 0) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text("Please select at least 1 waffle.")),
-                  );
-                  return;
-                }
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                        "Order placed: $_quantity x ${widget.title} = ₱$_totalPrice"),
-                  ),
-                );
-                Navigator.pop(context);
-              },
+              label: "Add to Cart",
+              onPressed: _addToCart,
             ),
           ],
         ),

@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
-import 'helpers.dart'; // for showCancelConfirmation
-import 'waffle_details.dart'; // ✅ import details screen
+import 'helpers.dart';
+import 'waffle_details.dart'; // ✅ use WaffleDetailsScreen
 
 class WaffleScreen extends StatelessWidget {
-  const WaffleScreen({super.key});
+  final String diningLocation;
+
+  const WaffleScreen({super.key, required this.diningLocation});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5E6D3), // Beige background
+      backgroundColor: const Color(0xFFF5E6D3),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -24,33 +26,34 @@ class WaffleScreen extends StatelessWidget {
                       children: [
                         Icon(Icons.arrow_back, color: Colors.black, size: 28),
                         SizedBox(width: 8),
-                        Text(
-                          "Back",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        Text("Back",
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold)),
                       ],
                     ),
                   ),
                   const Spacer(),
-                  const Text(
-                    "WAFFLE",
-                    style: TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.5,
-                    ),
+                  Column(
+                    children: [
+                      const Text("WAFFLES",
+                          style: TextStyle(
+                              fontSize: 26,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.5)),
+                      const SizedBox(height: 2),
+                      Text("Dining: $diningLocation",
+                          style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.brown)),
+                    ],
                   ),
                   const Spacer(flex: 2),
                 ],
               ),
             ),
 
-            const SizedBox(height: 10),
-
-            /// PRODUCT GRID
+            /// WAFFLES GRID
             Expanded(
               child: GridView.count(
                 crossAxisCount: 2,
@@ -58,18 +61,36 @@ class WaffleScreen extends StatelessWidget {
                 crossAxisSpacing: 25,
                 padding: const EdgeInsets.all(24),
                 children: [
-                  buildProductItem(context, "Mango", "assets/images/Waf mango.png", 79),
-                  buildProductItem(context, "Choco Oreo", "assets/images/Waf choco oreo.png", 79),
-                  buildProductItem(context, "Choco Banana", "assets/images/Waf chocobanana.png", 79),
-                  buildProductItem(context, "Oreo", "assets/images/Waffle Oreo.png", 79),
-                  buildProductItem(context, "Strawberry", "assets/images/Waf strawberry.png", 79),
-                  buildProductItem(context, "Blueberry", "assets/images/Waf blueberry.png", 79),
                   buildProductItem(
                     context,
-                    "Plain Waffle",
-                    "assets/images/plainwaffle.png",
-                    59,
-                    withCaramel: true, // ✅ caramel option only for plain
+                    title: "Plain Waffle",
+                    imagePath: "assets/images/Waffle Plain.png",
+                    basePrice: 35,
+                    withCaramel: true, // ✅ only Plain Waffle has caramel option
+                  ),
+                  buildProductItem(
+                    context,
+                    title: "Oreo Waffle",
+                    imagePath: "assets/images/Waffle Oreo.png",
+                    basePrice: 39,
+                  ),
+                  buildProductItem(
+                    context,
+                    title: "Chocolate Waffle",
+                    imagePath: "assets/images/Waffle Choco.png",
+                    basePrice: 39,
+                  ),
+                  buildProductItem(
+                    context,
+                    title: "Matcha Waffle",
+                    imagePath: "assets/images/Waffle Matcha.png",
+                    basePrice: 39,
+                  ),
+                  buildProductItem(
+                    context,
+                    title: "Strawberry Waffle",
+                    imagePath: "assets/images/Waffle Strawberry.png",
+                    basePrice: 39,
                   ),
                 ],
               ),
@@ -82,9 +103,7 @@ class WaffleScreen extends StatelessWidget {
                 width: double.infinity,
                 child: AnimatedButton(
                   label: "Cancel Order",
-                  onPressed: () {
-                    showCancelConfirmation(context);
-                  },
+                  onPressed: () => showCancelConfirmation(context),
                 ),
               ),
             ),
@@ -94,8 +113,14 @@ class WaffleScreen extends StatelessWidget {
     );
   }
 
-  /// PRODUCT ITEM (image box + name below + navigation)
-  Widget buildProductItem(BuildContext context, String title, String imagePath, int basePrice, {bool withCaramel = false}) {
+  /// 🔹 PRODUCT ITEM WIDGET
+  Widget buildProductItem(
+    BuildContext context, {
+    required String title,
+    required String imagePath,
+    required int basePrice,
+    bool withCaramel = false,
+  }) {
     return Column(
       children: [
         Expanded(
@@ -109,6 +134,7 @@ class WaffleScreen extends StatelessWidget {
                     imagePath: imagePath,
                     basePrice: basePrice,
                     withCaramel: withCaramel,
+                    diningLocation: diningLocation, // ✅ pass location
                   ),
                 ),
               );
@@ -118,11 +144,11 @@ class WaffleScreen extends StatelessWidget {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: Colors.black, width: 2),
-                boxShadow: [
+                boxShadow: const [
                   BoxShadow(
                     color: Colors.black26,
                     blurRadius: 6,
-                    offset: const Offset(3, 4),
+                    offset: Offset(3, 4),
                   ),
                 ],
               ),
@@ -138,14 +164,9 @@ class WaffleScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
+        Text(title,
+            style: const TextStyle(
+                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black)),
       ],
     );
   }

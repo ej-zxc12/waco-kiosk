@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
-import 'helpers.dart'; // for showCancelConfirmation
-import 'product_details.dart'; // ✅ reuse MilkTea ProductDetailsScreen
+import 'helpers.dart'; // for showCancelConfirmation, AnimatedButton, AnimatedScaleButton
+import 'product_details.dart'; // ✅ reuse ProductDetailsScreen
 
 class IcedCoffeeScreen extends StatelessWidget {
-  const IcedCoffeeScreen({super.key});
+  final String diningLocation; // ✅ keep dining location context
+
+  const IcedCoffeeScreen({super.key, required this.diningLocation});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5E6D3),
+      backgroundColor: const Color(0xFFF5E6D3), // Beige background
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,7 +88,7 @@ class IcedCoffeeScreen extends StatelessWidget {
     );
   }
 
-  /// PRODUCT ITEM
+  /// PRODUCT ITEM (navigates to ProductDetailsScreen)
   Widget buildProductItem(BuildContext context, String title, String imagePath) {
     return Column(
       children: [
@@ -96,13 +98,14 @@ class IcedCoffeeScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ProductDetailsScreen(
+                  builder: (_) => ProductDetailsScreen(
                     productName: title,
                     imagePath: imagePath,
                     options: [
                       {"label": "12oz", "price": 49},
                       {"label": "16oz", "price": 59},
                     ],
+                    diningLocation: diningLocation, // ✅ pass dining location
                   ),
                 ),
               );
