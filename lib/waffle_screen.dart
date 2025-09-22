@@ -26,26 +26,36 @@ class WaffleScreen extends StatelessWidget {
                       children: [
                         Icon(Icons.arrow_back, color: Colors.black, size: 28),
                         SizedBox(width: 8),
-                        Text("Back",
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold)),
+                        Text(
+                          "Back",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ],
                     ),
                   ),
                   const Spacer(),
                   Column(
                     children: [
-                      const Text("WAFFLES",
-                          style: TextStyle(
-                              fontSize: 26,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.5)),
+                      const Text(
+                        "WAFFLES",
+                        style: TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.5,
+                        ),
+                      ),
                       const SizedBox(height: 2),
-                      Text("Dining: $diningLocation",
-                          style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.brown)),
+                      Text(
+                        "Dining: $diningLocation",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.brown,
+                        ),
+                      ),
                     ],
                   ),
                   const Spacer(flex: 2),
@@ -63,34 +73,33 @@ class WaffleScreen extends StatelessWidget {
                 children: [
                   buildProductItem(
                     context,
-                    title: "Plain Waffle",
+                    name: "Plain Waffle",
                     imagePath: "assets/images/Waffle Plain.png",
-                    basePrice: 35,
-                    withCaramel: true, // ✅ only Plain Waffle has caramel option
+                    price: 59,
                   ),
                   buildProductItem(
                     context,
-                    title: "Oreo Waffle",
+                    name: "Oreo Waffle",
                     imagePath: "assets/images/Waffle Oreo.png",
-                    basePrice: 39,
+                    price: 79,
                   ),
                   buildProductItem(
                     context,
-                    title: "Chocolate Waffle",
+                    name: "Chocolate Waffle",
                     imagePath: "assets/images/Waffle Choco.png",
-                    basePrice: 39,
+                    price: 79,
                   ),
                   buildProductItem(
                     context,
-                    title: "Matcha Waffle",
+                    name: "Matcha Waffle",
                     imagePath: "assets/images/Waffle Matcha.png",
-                    basePrice: 39,
+                    price: 79,
                   ),
                   buildProductItem(
                     context,
-                    title: "Strawberry Waffle",
+                    name: "Strawberry Waffle",
                     imagePath: "assets/images/Waffle Strawberry.png",
-                    basePrice: 39,
+                    price: 9,
                   ),
                 ],
               ),
@@ -116,10 +125,9 @@ class WaffleScreen extends StatelessWidget {
   /// 🔹 PRODUCT ITEM WIDGET
   Widget buildProductItem(
     BuildContext context, {
-    required String title,
+    required String name,
     required String imagePath,
-    required int basePrice,
-    bool withCaramel = false,
+    required int price,
   }) {
     return Column(
       children: [
@@ -130,11 +138,10 @@ class WaffleScreen extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) => WaffleDetailsScreen(
-                    title: title,
-                    imagePath: imagePath,
-                    basePrice: basePrice,
-                    withCaramel: withCaramel,
-                    diningLocation: diningLocation, // ✅ pass location
+                    name: name, // ✅ fixed
+                    price: price, // ✅ fixed
+                    imagePath: imagePath, // ✅ fixed
+                    diningLocation: diningLocation, // ✅ still required
                   ),
                 ),
               );
@@ -164,9 +171,14 @@ class WaffleScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        Text(title,
-            style: const TextStyle(
-                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black)),
+        Text(
+          name,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
       ],
     );
   }

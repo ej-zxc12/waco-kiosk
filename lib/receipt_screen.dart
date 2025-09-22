@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'home_menu.dart';
+import 'dining_location.dart'; // ✅ go back to dining location instead
+import 'home_menu.dart' show cartItemCount; // ✅ import only the global counter
 
 class ReceiptScreen extends StatelessWidget {
   final List<Map<String, dynamic>> cartItems;
@@ -15,145 +16,139 @@ class ReceiptScreen extends StatelessWidget {
     required this.orderNumber,
   });
 
-  int _calculateTotal() {
-    return cartItems.fold<int>(
+  @override
+  Widget build(BuildContext context) {
+    int total = cartItems.fold<int>(
       0,
       (sum, item) => sum + (item["price"] as int) * (item["qty"] as int),
     );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final total = _calculateTotal();
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5E6D3),
-      appBar: AppBar(
-        title: const Text("Order Confirmation"),
-        backgroundColor: const Color(0xFF6B4226),
-        automaticallyImplyLeading: false, // ✅ No back button
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
+      body: SafeArea(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
-              "🎉 Thank you for your order!",
+              "Receipt",
               style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.brown,
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // ✅ Order Number
-            Text(
-              "Order #$orderNumber",
-              style: const TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
-                color: Colors.green,
+                color: Color(0xFF6B4226),
               ),
             ),
             const SizedBox(height: 20),
 
-            // ✅ Items List
+            Text(
+              "Order No: #$orderNumber",
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+            ),
+
+            const SizedBox(height: 20),
+
             Expanded(
               child: ListView.builder(
                 itemCount: cartItems.length,
                 itemBuilder: (context, index) {
                   final item = cartItems[index];
-                  final itemTotal =
-                      (item["price"] as int) * (item["qty"] as int);
-
                   return ListTile(
-                    leading: item["imagePath"] != null
-                        ? Image.asset(item["imagePath"], width: 40, height: 40)
-                        : const Icon(Icons.local_cafe, color: Colors.brown),
-                    title: Text(
-                      "${item["name"]} ${item["size"] != null ? "(${item["size"]})" : ""}",
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text("${item["qty"]} × ₱${item["price"]}"),
-                    trailing: Text("₱$itemTotal"),
+                    title: Text(item["name"]),
+                    subtitle: Text("Qty: ${item["qty"]}"),
+                    trailing: Text("₱${item["price"] * item["qty"]}"),
                   );
                 },
               ),
             ),
 
-            const Divider(thickness: 2),
-
-            // ✅ Total
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  "Total:",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.brown,
-                  ),
-                ),
-                Text(
-                  "₱$total",
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-
-            // ✅ Payment + Dining Info
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.brown, width: 2),
-              ),
-              child: Text(
-                "Payment Method: $paymentMethod\nDining Location: $diningLocation",
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
+            Text(
+              "Total: ₱$total",
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF6B4226),
               ),
             ),
+
             const SizedBox(height: 20),
 
-            // ✅ Back to Home
-            ElevatedButton.icon(
-              onPressed: () {
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => HomeMenu(
-                      diningLocation: diningLocation, // ✅ pass it back
-                    ),
-                  ),
-                  (route) => false,
-                );
-              },
-              icon: const Icon(Icons.home),
-              label: const Text("Back to Home"),
+            Text(
+              "Payment: $paymentMethod\nDining: $diningLocation",
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 18, color: Colors.black87),
+            ),
+
+            const SizedBox(height: 40),
+
+            ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF6B4226),
                 foregroundColor: Colors.white,
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+                    const EdgeInsets.symmetric(horizontal: 60, vertical: 20),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(18),
+                ),
+              ),
+              onPressed: () async {
+                // ✅ Clear cart before going back
+                cartItems.clear();
+                cartItemCount.value = 0;
+
+                // ✅ Show thank you popup with auto close
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (context) {
+                    // Auto-close after 3 seconds
+                    Future.delayed(const Duration(seconds: 3), () {
+                      if (Navigator.canPop(context)) {
+                        Navigator.pop(context); // close dialog
+                      }
+                    });
+
+                    return AlertDialog(
+                      title: const Text("✅ Order Successful"),
+                      content: const Text(
+                        "Thank you for your order!\nPlease wait while we prepare it.",
+                        style: TextStyle(fontSize: 18),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context); // close dialog
+                          },
+                          child: const Text(
+                            "OK",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF6B4226),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ).then((_) {
+                  // ✅ After dialog closes (auto or manual), go back
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const DiningLocationScreen(),
+                    ),
+                    (route) => false,
+                  );
+                });
+              },
+              child: const Text(
+                "Back to Home",
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
+
+            const SizedBox(height: 30),
           ],
         ),
       ),

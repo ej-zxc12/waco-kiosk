@@ -275,7 +275,7 @@ class _CartScreenState extends State<CartScreen> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => HomeMenu(
-                                diningLocation: widget.diningLocation, // ✅ keep dining info
+                                diningLocation: widget.diningLocation,
                               ),
                             ),
                           );

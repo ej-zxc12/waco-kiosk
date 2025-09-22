@@ -6,7 +6,7 @@ import 'fruit_soda_screen.dart';
 import 'fruit_yogurt_screen.dart';
 import 'waffle_screen.dart';
 import 'helpers.dart';
-import 'cart_button.dart'; // ✅ import your custom cart button
+import 'cart_screen.dart'; // ✅ import CartScreen
 
 /// 🔹 Global cart counter (can be updated anywhere in the app)
 ValueNotifier<int> cartItemCount = ValueNotifier<int>(0);
@@ -15,7 +15,7 @@ ValueNotifier<int> cartItemCount = ValueNotifier<int>(0);
 List<Map<String, dynamic>> cartItems = [];
 
 class HomeMenu extends StatelessWidget {
-  final String diningLocation; // ✅ carry the dining location
+  final String diningLocation; // ✅ still passed but hidden in UI
 
   const HomeMenu({super.key, required this.diningLocation});
 
@@ -27,7 +27,7 @@ class HomeMenu extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// HEADER (Back + Dining Location + Cart Button with badge)
+            /// HEADER (Back + Title + Cart Button with badge)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
@@ -59,38 +59,80 @@ class HomeMenu extends StatelessWidget {
 
                   const Spacer(),
 
-                  /// Dining Location Display
-                  Column(
-                    children: [
-                      const Text(
-                        "MENU",
-                        style: TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.5,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        "Dining: $diningLocation", // ✅ show dining location
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.brown,
-                        ),
-                      ),
-                    ],
+                  /// Title Only
+                  const Text(
+                    "MENU",
+                    style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.5,
+                    ),
                   ),
 
                   const Spacer(),
 
-                  /// 🔹 Use reusable CartButton and pass diningLocation
+                  /// 🔹 Cart Button with badge
                   ValueListenableBuilder<int>(
                     valueListenable: cartItemCount,
                     builder: (context, count, _) {
-                      return CartButton(
-                        cartItems: cartItems,
-                        diningLocation: diningLocation, // ✅ pass along
+                      return Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => CartScreen(
+                                    cartItems: cartItems,
+                                    diningLocation: diningLocation,
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              height: 50,
+                              width: 50,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(color: Colors.black, width: 2),
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Colors.black26,
+                                    blurRadius: 6,
+                                    offset: Offset(3, 4),
+                                  ),
+                                ],
+                              ),
+                              padding: const EdgeInsets.all(6),
+                              child: Image.asset(
+                                "assets/images/cart_logo.png",
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          ),
+                          if (count > 0)
+                            Positioned(
+                              right: -4,
+                              top: -4,
+                              child: Container(
+                                padding: const EdgeInsets.all(5),
+                                decoration: const BoxDecoration(
+                                  color: Colors.red,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Text(
+                                  "$count",
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
                       );
                     },
                   ),
@@ -156,7 +198,7 @@ class HomeMenu extends StatelessWidget {
     );
   }
 
-  /// 🔹 Reusable Menu Item Widget with Tap Animation + Navigation
+  /// 🔹 Reusable Menu Item Widget
   Widget buildMenuItem(BuildContext context, String title, String imagePath) {
     return AnimatedScaleButton(
       onTap: () {
@@ -164,35 +206,40 @@ class HomeMenu extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => MilkteaScreen(diningLocation: diningLocation),
+              builder: (context) =>
+                  MilkteaScreen(diningLocation: diningLocation),
             ),
           );
         } else if (title == "ICED COFFEE") {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => IcedCoffeeScreen(diningLocation: diningLocation),
+              builder: (context) =>
+                  IcedCoffeeScreen(diningLocation: diningLocation),
             ),
           );
         } else if (title == "FRUIT SODA") {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => FruitSodaScreen(diningLocation: diningLocation),
+              builder: (context) =>
+                  FruitSodaScreen(diningLocation: diningLocation),
             ),
           );
         } else if (title == "FRUIT YOGURT") {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => FruitYogurtScreen(diningLocation: diningLocation),
+              builder: (context) =>
+                  FruitYogurtScreen(diningLocation: diningLocation),
             ),
           );
         } else if (title == "WAFFLE") {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => WaffleScreen(diningLocation: diningLocation),
+              builder: (context) =>
+                  WaffleScreen(diningLocation: diningLocation),
             ),
           );
         }

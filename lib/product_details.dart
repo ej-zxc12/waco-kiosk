@@ -24,6 +24,7 @@ class ProductDetailsScreen extends StatefulWidget {
 class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   int _grandTotal = 0;
   List<Map<String, dynamic>> _selectedItems = [];
+  int _resetKey = 0; // 🔹 force reset for ExpandableSection
 
   void _updateGrandTotal(int total, List<Map<String, dynamic>> items) {
     setState(() {
@@ -69,6 +70,13 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     cartItemCount.value =
         cartItems.fold<int>(0, (sum, item) => sum + (item["qty"] as int));
 
+    // ✅ Reset selections after adding to cart
+    setState(() {
+      _grandTotal = 0;
+      _selectedItems.clear();
+      _resetKey++; // 🔹 force ExpandableSection to reset its state
+    });
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("✅ Item(s) added to cart.")),
     );
@@ -90,7 +98,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 child: Stack(
                   clipBehavior: Clip.none,
                   children: [
-                    // ✅ Custom CartButton with WaCo bag logo
                     InkWell(
                       onTap: () {
                         Navigator.push(
@@ -102,7 +109,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             ),
                           ),
                         );
-                      }, // ✅ fixed (removed stray semicolon)
+                      },
                       borderRadius: BorderRadius.circular(16),
                       child: Container(
                         padding: const EdgeInsets.all(10),
@@ -119,14 +126,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           ],
                         ),
                         child: Image.asset(
-                          "assets/images/cart_logo.png", // ✅ updated (no space in filename)
+                          "assets/images/cart_logo.png",
                           height: 30,
                           fit: BoxFit.contain,
                         ),
                       ),
                     ),
-
-                    // ✅ Red badge
                     if (count > 0)
                       Positioned(
                         right: -4,
@@ -159,7 +164,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ✅ Product Image
             Center(
               child: Container(
                 height: 140,
@@ -177,8 +181,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             ),
             const SizedBox(height: 20),
 
-            // ✅ Options Section
             ExpandableSection(
+              key: ValueKey(_resetKey), // 🔹 forces rebuild when reset
               title: "Choose Size",
               options: widget.options,
               onTotalChanged: _updateGrandTotal,
@@ -186,7 +190,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
             const SizedBox(height: 20),
 
-            // ✅ Show Grand Total
             if (_grandTotal > 0)
               Center(
                 child: Text(
@@ -201,15 +204,22 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
             const SizedBox(height: 40),
 
-            // ✅ Add to Cart button
+            // ✅ Add to Cart button (always a function, check inside)
             AnimatedButton(
               label: "Add to Cart",
-              onPressed: () => _placeOrder(context),
+              onPressed: () {
+                if (_grandTotal > 0 && _selectedItems.isNotEmpty) {
+                  _placeOrder(context);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("⚠️ Please select an item.")),
+                  );
+                }
+              },
             ),
 
             const SizedBox(height: 16),
 
-            // ✅ Add More Items button
             Center(
               child: OutlinedButton.icon(
                 onPressed: () {
@@ -217,7 +227,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => HomeMenu(
-                        diningLocation: widget.diningLocation, // ✅ keep context
+                        diningLocation: widget.diningLocation,
                       ),
                     ),
                   );
