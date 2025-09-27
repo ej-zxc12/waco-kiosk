@@ -27,58 +27,127 @@ class ReceiptScreen extends StatelessWidget {
       backgroundColor: const Color(0xFFF5E6D3),
       body: SafeArea(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const SizedBox(height: 20),
+
+            // ✅ Logo
+            Image.asset(
+              "assets/images/wacologo.png",
+              height: 80,
+            ),
+
+            const SizedBox(height: 10),
+
             const Text(
-              "Receipt",
+              "The WaCo - San Jose",
               style: TextStyle(
-                fontSize: 28,
+                fontSize: 22,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF6B4226),
               ),
             ),
+
             const SizedBox(height: 20),
+
+            // ✅ Order Info
+            Text(
+              "Order Receipt",
+              style: const TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF6B4226),
+              ),
+            ),
+
+            const SizedBox(height: 10),
 
             Text(
               "Order No: #$orderNumber",
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
             ),
 
             const SizedBox(height: 20),
 
+            // ✅ Order Items
             Expanded(
               child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 itemCount: cartItems.length,
                 itemBuilder: (context, index) {
                   final item = cartItems[index];
-                  return ListTile(
-                    title: Text(item["name"]),
-                    subtitle: Text("Qty: ${item["qty"]}"),
-                    trailing: Text("₱${item["price"] * item["qty"]}"),
+                  return Card(
+                    margin: const EdgeInsets.symmetric(vertical: 6),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    color: Colors.white,
+                    elevation: 2,
+                    child: ListTile(
+                      title: Text(
+                        item["name"],
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF6B4226),
+                        ),
+                      ),
+                      subtitle: Text("Qty: ${item["qty"]}"),
+                      trailing: Text(
+                        "₱${item["price"] * item["qty"]}",
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
                   );
                 },
               ),
             ),
 
+            // ✅ Divider
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              height: 2,
+              color: const Color(0xFF6B4226),
+            ),
+
+            // ✅ Total
             Text(
               "Total: ₱$total",
               style: const TextStyle(
-                fontSize: 24,
+                fontSize: 26,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF6B4226),
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
 
-            Text(
-              "Payment: $paymentMethod\nDining: $diningLocation",
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 18, color: Colors.black87),
+            // ✅ Payment & Dining Info
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                children: [
+                  Text(
+                    "Payment Method: $paymentMethod",
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  Text(
+                    "Dining: $diningLocation",
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ],
+              ),
             ),
 
-            const SizedBox(height: 40),
+            const SizedBox(height: 25),
 
+            // ✅ Back Button
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF6B4226),
@@ -90,24 +159,30 @@ class ReceiptScreen extends StatelessWidget {
                 ),
               ),
               onPressed: () async {
-                // ✅ Clear cart before going back
                 cartItems.clear();
                 cartItemCount.value = 0;
 
-                // ✅ Show thank you popup with auto close
                 showDialog(
                   context: context,
                   barrierDismissible: false,
                   builder: (context) {
-                    // Auto-close after 3 seconds
                     Future.delayed(const Duration(seconds: 3), () {
                       if (Navigator.canPop(context)) {
-                        Navigator.pop(context); // close dialog
+                        Navigator.pop(context);
                       }
                     });
 
                     return AlertDialog(
-                      title: const Text("✅ Order Successful"),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      title: const Text(
+                        "✅ Order Successful",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF6B4226),
+                        ),
+                      ),
                       content: const Text(
                         "Thank you for your order!\nPlease wait while we prepare it.",
                         style: TextStyle(fontSize: 18),
@@ -115,7 +190,7 @@ class ReceiptScreen extends StatelessWidget {
                       actions: [
                         TextButton(
                           onPressed: () {
-                            Navigator.pop(context); // close dialog
+                            Navigator.pop(context);
                           },
                           child: const Text(
                             "OK",
@@ -129,7 +204,6 @@ class ReceiptScreen extends StatelessWidget {
                     );
                   },
                 ).then((_) {
-                  // ✅ After dialog closes (auto or manual), go back
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
@@ -142,13 +216,13 @@ class ReceiptScreen extends StatelessWidget {
               child: const Text(
                 "Back to Home",
                 style: TextStyle(
-                  fontSize: 22,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
 
-            const SizedBox(height: 30),
+            const SizedBox(height: 20),
           ],
         ),
       ),
