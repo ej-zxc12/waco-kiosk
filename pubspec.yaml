@@ -56,6 +56,7 @@ flutter:
     - assets/images/cart_logo.png
     - assets/images/counter.png
     - assets/images/Cashless payment.png
+    - assets/images/qr.png
 
 
 flutter_launcher_icons:

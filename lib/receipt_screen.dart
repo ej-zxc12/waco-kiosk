@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'dining_location.dart'; // ✅ go back to dining location instead
-import 'home_menu.dart' show cartItemCount; // ✅ import only the global counter
+import 'dining_location.dart';
+import 'home_menu.dart' show cartItemCount;
+import 'responsive_layout.dart'; // ✅ Import your responsive layout
 
 class ReceiptScreen extends StatelessWidget {
   final List<Map<String, dynamic>> cartItems;
@@ -14,6 +15,55 @@ class ReceiptScreen extends StatelessWidget {
     required this.paymentMethod,
     required this.diningLocation,
     required this.orderNumber,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ResponsiveLayout(
+      mobile: _ReceiptContent(
+        cartItems: cartItems,
+        paymentMethod: paymentMethod,
+        diningLocation: diningLocation,
+        orderNumber: orderNumber,
+        fontScale: 0.9,
+        paddingScale: 0.8,
+      ),
+      tablet: _ReceiptContent(
+        cartItems: cartItems,
+        paymentMethod: paymentMethod,
+        diningLocation: diningLocation,
+        orderNumber: orderNumber,
+        fontScale: 1.1,
+        paddingScale: 1.2,
+      ),
+      desktop: _ReceiptContent(
+        cartItems: cartItems,
+        paymentMethod: paymentMethod,
+        diningLocation: diningLocation,
+        orderNumber: orderNumber,
+        fontScale: 1.3,
+        paddingScale: 1.5,
+      ),
+    );
+  }
+}
+
+// ✅ Reusable widget for the receipt content
+class _ReceiptContent extends StatelessWidget {
+  final List<Map<String, dynamic>> cartItems;
+  final String paymentMethod;
+  final String diningLocation;
+  final int orderNumber;
+  final double fontScale;
+  final double paddingScale;
+
+  const _ReceiptContent({
+    required this.cartItems,
+    required this.paymentMethod,
+    required this.diningLocation,
+    required this.orderNumber,
+    required this.fontScale,
+    required this.paddingScale,
   });
 
   @override
@@ -33,29 +83,28 @@ class ReceiptScreen extends StatelessWidget {
             // ✅ Logo
             Image.asset(
               "assets/images/wacologo.png",
-              height: 80,
+              height: 80 * fontScale,
             ),
 
             const SizedBox(height: 10),
 
-            const Text(
+            Text(
               "The WaCo - San Jose",
               style: TextStyle(
-                fontSize: 22,
+                fontSize: 22 * fontScale,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF6B4226),
+                color: const Color(0xFF6B4226),
               ),
             ),
 
             const SizedBox(height: 20),
 
-            // ✅ Order Info
             Text(
               "Order Receipt",
-              style: const TextStyle(
-                fontSize: 26,
+              style: TextStyle(
+                fontSize: 26 * fontScale,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF6B4226),
+                color: const Color(0xFF6B4226),
               ),
             ),
 
@@ -63,8 +112,8 @@ class ReceiptScreen extends StatelessWidget {
 
             Text(
               "Order No: #$orderNumber",
-              style: const TextStyle(
-                fontSize: 18,
+              style: TextStyle(
+                fontSize: 18 * fontScale,
                 fontWeight: FontWeight.w600,
                 color: Colors.black87,
               ),
@@ -75,12 +124,12 @@ class ReceiptScreen extends StatelessWidget {
             // ✅ Order Items
             Expanded(
               child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.symmetric(horizontal: 20 * paddingScale),
                 itemCount: cartItems.length,
                 itemBuilder: (context, index) {
                   final item = cartItems[index];
                   return Card(
-                    margin: const EdgeInsets.symmetric(vertical: 6),
+                    margin: EdgeInsets.symmetric(vertical: 6 * paddingScale),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -89,16 +138,17 @@ class ReceiptScreen extends StatelessWidget {
                     child: ListTile(
                       title: Text(
                         item["name"],
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF6B4226),
+                          color: const Color(0xFF6B4226),
+                          fontSize: 16 * fontScale,
                         ),
                       ),
                       subtitle: Text("Qty: ${item["qty"]}"),
                       trailing: Text(
                         "₱${item["price"] * item["qty"]}",
-                        style: const TextStyle(
-                          fontSize: 16,
+                        style: TextStyle(
+                          fontSize: 16 * fontScale,
                           fontWeight: FontWeight.bold,
                           color: Colors.black87,
                         ),
@@ -111,7 +161,8 @@ class ReceiptScreen extends StatelessWidget {
 
             // ✅ Divider
             Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              margin: EdgeInsets.symmetric(
+                  horizontal: 20 * paddingScale, vertical: 10 * paddingScale),
               height: 2,
               color: const Color(0xFF6B4226),
             ),
@@ -119,10 +170,10 @@ class ReceiptScreen extends StatelessWidget {
             // ✅ Total
             Text(
               "Total: ₱$total",
-              style: const TextStyle(
-                fontSize: 26,
+              style: TextStyle(
+                fontSize: 26 * fontScale,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF6B4226),
+                color: const Color(0xFF6B4226),
               ),
             ),
 
@@ -130,20 +181,54 @@ class ReceiptScreen extends StatelessWidget {
 
             // ✅ Payment & Dining Info
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.symmetric(horizontal: 20 * paddingScale),
               child: Column(
                 children: [
                   Text(
                     "Payment Method: $paymentMethod",
-                    style: const TextStyle(fontSize: 16),
+                    style: TextStyle(fontSize: 16 * fontScale),
                   ),
                   Text(
                     "Dining: $diningLocation",
-                    style: const TextStyle(fontSize: 16),
+                    style: TextStyle(fontSize: 16 * fontScale),
                   ),
                 ],
               ),
             ),
+
+            const SizedBox(height: 25),
+
+            // ✅ Show QR code only if Cashless
+            if (paymentMethod == "Cashless") ...[
+              const SizedBox(height: 25),
+              Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 3,
+                child: Padding(
+                  padding: EdgeInsets.all(16 * paddingScale),
+                  child: Column(
+                    children: [
+                      Text(
+                        "Scan to Pay with GCash/PayMaya",
+                        style: TextStyle(
+                          fontSize: 18 * fontScale,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF6B4226),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Image.asset(
+                        "assets/images/qr.png",
+                        width: 180 * fontScale,
+                        height: 180 * fontScale,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
 
             const SizedBox(height: 25),
 
@@ -152,8 +237,8 @@ class ReceiptScreen extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF6B4226),
                 foregroundColor: Colors.white,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 60, vertical: 20),
+                padding: EdgeInsets.symmetric(
+                    horizontal: 60 * paddingScale, vertical: 20 * paddingScale),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18),
                 ),
@@ -213,10 +298,10 @@ class ReceiptScreen extends StatelessWidget {
                   );
                 });
               },
-              child: const Text(
+              child: Text(
                 "Back to Home",
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 20 * fontScale,
                   fontWeight: FontWeight.bold,
                 ),
               ),

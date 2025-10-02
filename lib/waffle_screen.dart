@@ -74,7 +74,7 @@ class WaffleScreen extends StatelessWidget {
                   buildProductItem(
                     context,
                     name: "Plain Waffle",
-                    imagePath: "assets/images/Waffle Plain.png",
+                    imagePath: "assets/images/plainwaffle.png",
                     price: 59,
                   ),
                   buildProductItem(
@@ -85,22 +85,28 @@ class WaffleScreen extends StatelessWidget {
                   ),
                   buildProductItem(
                     context,
-                    name: "Chocolate Waffle",
-                    imagePath: "assets/images/Waffle Choco.png",
+                    name: "Chocolate Oreo Waffle",
+                    imagePath: "assets/images/Waf choco oreo.png",
                     price: 79,
                   ),
                   buildProductItem(
                     context,
-                    name: "Matcha Waffle",
-                    imagePath: "assets/images/Waffle Matcha.png",
+                    name: "Mango Waffle",
+                    imagePath: "assets/images/Waf mango.png",
                     price: 79,
                   ),
                   buildProductItem(
                     context,
                     name: "Strawberry Waffle",
-                    imagePath: "assets/images/Waffle Strawberry.png",
+                    imagePath: "assets/images/Waf strawberry.png",
                     price: 9,
                   ),
+                  buildProductItem(
+                    context,
+                    name: "Choco Banana Waffle",
+                    imagePath: "assets/images/Waf chocobanana.png",
+                    price: 79,
+                  ),  
                 ],
               ),
             ),
