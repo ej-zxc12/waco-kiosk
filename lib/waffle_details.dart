@@ -21,32 +21,23 @@ class WaffleDetailsScreen extends StatefulWidget {
 }
 
 class _WaffleDetailsScreenState extends State<WaffleDetailsScreen> {
-  int quantity = 0; // ✅ default is NONE (0)
+  int quantity = 0;
   bool withCaramel = false;
 
-  void _increaseQty() {
-    setState(() {
-      quantity++;
-    });
-  }
-
-  void _decreaseQty() {
-    setState(() {
-      if (quantity > 0) quantity--;
-    });
-  }
+  void _increaseQty() => setState(() => quantity++);
+  void _decreaseQty() => setState(() {
+        if (quantity > 0) quantity--;
+      });
 
   int _calculateTotal() {
     if (quantity == 0) return 0;
     int baseTotal = widget.price * quantity;
-    if (withCaramel) {
-      baseTotal += 10 * quantity; // ✅ caramel +10 each waffle
-    }
+    if (withCaramel) baseTotal += 10 * quantity;
     return baseTotal;
   }
 
   void _addToCart(BuildContext context) {
-    if (quantity == 0) return; // prevent adding nothing
+    if (quantity == 0) return;
 
     final existingIndex = cartItems.indexWhere(
       (item) =>
@@ -77,7 +68,7 @@ class _WaffleDetailsScreenState extends State<WaffleDetailsScreen> {
       withCaramel = false;
     });
 
-    // ✅ Go to Cart
+    // ✅ Navigate to cart
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -98,22 +89,41 @@ class _WaffleDetailsScreenState extends State<WaffleDetailsScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF6B4226),
         elevation: 0,
-        title: Text(widget.name),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: Column(
         children: [
-          /// 🖼️ Product Image
+          /// 🧇 Product Image
           Container(
             color: const Color(0xFFF5E6D3),
-            child: Image.asset(
-              widget.imagePath,
-              width: double.infinity,
-              height: 220,
-              fit: BoxFit.contain,
+            padding: const EdgeInsets.all(16),
+            child: Center(
+              child: Container(
+                height: 160,
+                width: 160,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(color: Colors.brown.shade700, width: 2),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.brown.withOpacity(0.2),
+                      blurRadius: 6,
+                      offset: const Offset(3, 4),
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Image.asset(widget.imagePath, fit: BoxFit.contain),
+                ),
+              ),
             ),
           ),
 
-          /// 🔹 Product Info
           Expanded(
             child: Container(
               width: double.infinity,
@@ -123,7 +133,7 @@ class _WaffleDetailsScreenState extends State<WaffleDetailsScreen> {
               ),
               padding: const EdgeInsets.all(24),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
                     widget.name,
@@ -147,28 +157,29 @@ class _WaffleDetailsScreenState extends State<WaffleDetailsScreen> {
                   ),
                   const SizedBox(height: 20),
 
-                  /// 🔹 Caramel Option (Plain Waffle only)
+                  /// 🔹 Caramel Option
                   if (widget.name == "Plain Waffle")
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Checkbox(
                           value: withCaramel,
                           activeColor: Colors.brown,
-                          onChanged: (val) {
-                            setState(() {
-                              withCaramel = val ?? false;
-                            });
-                          },
+                          onChanged: (val) =>
+                              setState(() => withCaramel = val ?? false),
                         ),
                         const Text(
                           "Add Caramel (+₱10 each)",
                           style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w500),
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ],
                     ),
 
                   /// 🔹 Quantity Selector
+                  const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -191,23 +202,54 @@ class _WaffleDetailsScreenState extends State<WaffleDetailsScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
 
-                  /// 🔹 Total Price (only show if qty > 0)
-                  if (quantity > 0)
-                    Center(
-                      child: Text(
-                        "Total: ₱$totalPrice",
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green,
-                        ),
+                  /// 🔹 Total Price
+                  if (quantity > 0) ...[
+                    const SizedBox(height: 10),
+                    Text(
+                      "Total: ₱$totalPrice",
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green,
                       ),
                     ),
+                  ],
+
+                  const SizedBox(height: 20),
+
+                  /// 🕒 Order processing notice
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFF3E0),
+                      border: Border.all(color: Colors.orange.shade200),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.access_time,
+                            color: Colors.orange, size: 20),
+                        SizedBox(width: 8),
+                        Flexible(
+                          child: Text(
+                            "Your order will be processed within 3–5 minutes depending on queue.",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.brown,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
                   const Spacer(),
 
-                  /// 🔹 Add to Cart Button
+                  /// 🔹 Add to Cart
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(

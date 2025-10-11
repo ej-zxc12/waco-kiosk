@@ -99,7 +99,7 @@ class WaffleScreen extends StatelessWidget {
                     context,
                     name: "Strawberry Waffle",
                     imagePath: "assets/images/Waf strawberry.png",
-                    price: 9,
+                    price: 79,
                   ),
                   buildProductItem(
                     context,

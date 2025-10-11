@@ -6,8 +6,8 @@ import 'helpers.dart';
 class ProductDetailsScreen extends StatefulWidget {
   final String productName;
   final String imagePath;
-  final List<Map<String, dynamic>> options; // e.g. MilkTea sizes
-  final String diningLocation; // ✅ keep dining location context
+  final List<Map<String, dynamic>> options;
+  final String diningLocation;
 
   const ProductDetailsScreen({
     super.key,
@@ -74,7 +74,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     setState(() {
       _grandTotal = 0;
       _selectedItems.clear();
-      _resetKey++; // 🔹 force ExpandableSection to reset its state
+      _resetKey++;
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -87,8 +87,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF5E6D3),
       appBar: AppBar(
-        title: Text(widget.productName),
         backgroundColor: const Color(0xFF6B4226),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
         actions: [
           ValueListenableBuilder<int>(
             valueListenable: cartItemCount,
@@ -162,16 +165,24 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            // 🧇 Product Image
             Center(
               child: Container(
-                height: 140,
-                width: 140,
+                height: 160,
+                width: 160,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  border: Border.all(color: Colors.black, width: 2),
+                  border: Border.all(color: Colors.brown.shade700, width: 2),
                   borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.brown.withOpacity(0.2),
+                      blurRadius: 6,
+                      offset: const Offset(3, 4),
+                    ),
+                  ],
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
@@ -179,10 +190,24 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 ),
               ),
             ),
+
+            const SizedBox(height: 12),
+
+            // 🧾 Product Name below image
+            Text(
+              widget.productName,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF6B4226),
+              ),
+            ),
+
             const SizedBox(height: 20),
 
             ExpandableSection(
-              key: ValueKey(_resetKey), // 🔹 forces rebuild when reset
+              key: ValueKey(_resetKey),
               title: "Choose Size",
               options: widget.options,
               onTotalChanged: _updateGrandTotal,
@@ -191,20 +216,17 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             const SizedBox(height: 20),
 
             if (_grandTotal > 0)
-              Center(
-                child: Text(
-                  "Grand Total: ₱$_grandTotal",
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.brown,
-                  ),
+              Text(
+                "Grand Total: ₱$_grandTotal",
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.brown,
                 ),
               ),
 
             const SizedBox(height: 40),
 
-            // ✅ Add to Cart button (always a function, check inside)
             AnimatedButton(
               label: "Add to Cart",
               onPressed: () {
@@ -249,6 +271,45 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 ),
               ),
             ),
+
+            const SizedBox(height: 30),
+
+            // 🕒 Order Processing Note
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFF8E1),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.brown.shade300, width: 1.5),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.brown.withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: const Offset(2, 3),
+                  ),
+                ],
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.access_time, color: Color.fromARGB(255, 9, 7, 6)),
+                  SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      "Please note: Orders typically take about 3–5 minutes to process, depending on the number of customers ahead.",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Color.fromARGB(255, 15, 13, 11),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 20),
           ],
         ),
       ),
