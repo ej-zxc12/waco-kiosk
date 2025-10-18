@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'home_menu.dart' show cartItemCount;
 import 'responsive_layout.dart';
-import 'main.dart'; // ✅ Added import to access SplashScreen
+import 'splash_screen.dart'; // ✅ import SplashScreen directly
 
 class ReceiptScreen extends StatelessWidget {
   final List<Map<String, dynamic>> cartItems;

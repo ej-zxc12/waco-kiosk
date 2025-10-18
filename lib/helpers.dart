@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'dining_location.dart';
+import 'home_menu.dart' show cartItems, cartItemCount;
+import 'splash_screen.dart';
+import 'nav.dart';
 
 /// 🔹 Cancel Confirmation Dialog
 Future<void> showCancelConfirmation(BuildContext context) async {
@@ -68,13 +70,23 @@ Future<void> showCancelConfirmation(BuildContext context) async {
                       ),
                     ),
                     onPressed: () {
+                      // Clear all kiosk state
+                      cartItems.clear();
+                      cartItemCount.value = 0;
+
+                      // Close dialog
                       Navigator.of(context).pop();
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const DiningLocationScreen(),
-                        ),
-                      );
+
+                      // Navigate back to Splash using root navigator
+                      final nav = Nav.navKey.currentState;
+                      if (nav != null) {
+                        nav.pushAndRemoveUntil(
+                          MaterialPageRoute(
+                            builder: (context) => const SplashScreen(),
+                          ),
+                          (route) => false,
+                        );
+                      }
                     },
                     child: const Text(
                       "Yes",

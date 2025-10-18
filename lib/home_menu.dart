@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'dining_location.dart';
 import 'milktea_screen.dart';
@@ -8,7 +7,7 @@ import 'fruit_yogurt_screen.dart';
 import 'waffle_screen.dart';
 import 'helpers.dart';
 import 'cart_screen.dart';
-import 'main.dart'; // ✅ for SplashScreen
+// import 'main.dart'; // no longer needed here
 
 /// 🔹 Global cart counter
 ValueNotifier<int> cartItemCount = ValueNotifier<int>(0);
@@ -23,9 +22,7 @@ class HomeMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IdleWrapper( // ✅ Inactivity watcher
-      idleDuration: const Duration(minutes: 1), // 1 minute idle
-      child: Scaffold(
+    return Scaffold(
         backgroundColor: const Color(0xFFF5E6D3),
         body: SafeArea(
           child: Column(
@@ -185,8 +182,7 @@ class HomeMenu extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 
   /// 🔹 Menu Item Builder
@@ -283,132 +279,6 @@ class HomeMenu extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-/// 🕒 Idle Timeout Wrapper with Data Reset
-class IdleWrapper extends StatefulWidget {
-  final Widget child;
-  final Duration idleDuration;
-
-  const IdleWrapper({
-    super.key,
-    required this.child,
-    this.idleDuration = const Duration(minutes: 1),
-  });
-
-  @override
-  State<IdleWrapper> createState() => _IdleWrapperState();
-}
-
-class _IdleWrapperState extends State<IdleWrapper> {
-  Timer? _timer;
-  bool _showWarning = false;
-  int _countdown = 10;
-
-  void _resetTimer() {
-    _timer?.cancel();
-    _showWarning = false;
-    _countdown = 10;
-    _timer = Timer(widget.idleDuration, _onIdle);
-  }
-
-  void _onIdle() {
-    setState(() => _showWarning = true);
-
-    Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_countdown == 0) {
-        timer.cancel();
-
-        // 🧹 Clear all kiosk data before returning home
-        cartItems.clear();
-        cartItemCount.value = 0;
-
-        if (mounted) {
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => const SplashScreen()),
-            (route) => false,
-          );
-        }
-      } else {
-        setState(() => _countdown--);
-      }
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _resetTimer();
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  void _onUserActivity([_]) {
-    if (_showWarning) {
-      setState(() => _showWarning = false);
-    }
-    _resetTimer();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Listener(
-      onPointerDown: _onUserActivity,
-      child: Stack(
-        children: [
-          widget.child,
-          if (_showWarning)
-            Container(
-              color: Colors.black54,
-              alignment: Alignment.center,
-              child: Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.hourglass_empty,
-                        color: Color(0xFF6B4226), size: 60),
-                    const SizedBox(height: 12),
-                    const Text(
-                      "No activity detected",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF6B4226),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      "Returning to Home in $_countdown seconds...",
-                      style: const TextStyle(
-                          fontSize: 16, color: Colors.black87),
-                    ),
-                    const SizedBox(height: 12),
-                    ElevatedButton(
-                      onPressed: _onUserActivity,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF6B4226),
-                        foregroundColor: Colors.white,
-                      ),
-                      child: const Text("Continue Order"),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-        ],
       ),
     );
   }

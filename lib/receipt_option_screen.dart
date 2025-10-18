@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'receipt_screen.dart';
-import 'dining_location.dart';
 
 class ReceiptOptionScreen extends StatelessWidget {
   final List<Map<String, dynamic>> cartItems;
