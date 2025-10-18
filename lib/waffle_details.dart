@@ -23,6 +23,7 @@ class WaffleDetailsScreen extends StatefulWidget {
 class _WaffleDetailsScreenState extends State<WaffleDetailsScreen> {
   int quantity = 0;
   bool withCaramel = false;
+  bool withChocolate = false;
 
   void _increaseQty() => setState(() => quantity++);
   void _decreaseQty() => setState(() {
@@ -32,43 +33,56 @@ class _WaffleDetailsScreenState extends State<WaffleDetailsScreen> {
   int _calculateTotal() {
     if (quantity == 0) return 0;
     int baseTotal = widget.price * quantity;
+
     if (withCaramel) baseTotal += 10 * quantity;
+    if (withChocolate) baseTotal += 10 * quantity;
+
     return baseTotal;
   }
 
   void _addToCart(BuildContext context) {
     if (quantity == 0) return;
 
+    // 🧇 Create a descriptive name for Plain Waffle
+    String finalName = widget.name;
+    if (widget.name == "Plain Waffle") {
+      if (withCaramel && withChocolate) {
+        finalName = "Plain Waffle + Caramel & Chocolate Syrup";
+      } else if (withCaramel) {
+        finalName = "Plain Waffle + Caramel Syrup";
+      } else if (withChocolate) {
+        finalName = "Plain Waffle + Chocolate Syrup";
+      }
+    }
+
     final existingIndex = cartItems.indexWhere(
-      (item) =>
-          item["name"] == widget.name &&
-          item["imagePath"] == widget.imagePath &&
-          item["withCaramel"] == withCaramel,
+      (item) => item["name"] == finalName && item["imagePath"] == widget.imagePath,
     );
 
     if (existingIndex != -1) {
       cartItems[existingIndex]["qty"] += quantity;
     } else {
       cartItems.add({
-        "name": widget.name + (withCaramel ? " + Caramel" : ""),
-        "price": widget.price + (withCaramel ? 10 : 0),
+        "name": finalName,
+        "price": widget.price +
+            ((withCaramel ? 10 : 0) + (withChocolate ? 10 : 0)),
         "qty": quantity,
         "imagePath": widget.imagePath,
         "size": "",
         "withCaramel": withCaramel,
+        "withChocolate": withChocolate,
       });
     }
 
     cartItemCount.value =
         cartItems.fold<int>(0, (sum, item) => sum + (item["qty"] as int));
 
-    // ✅ Reset after adding
     setState(() {
       quantity = 0;
       withCaramel = false;
+      withChocolate = false;
     });
 
-    // ✅ Navigate to cart
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -92,6 +106,10 @@ class _WaffleDetailsScreenState extends State<WaffleDetailsScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          "Waffle Details",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ),
       body: Column(
@@ -145,10 +163,7 @@ class _WaffleDetailsScreenState extends State<WaffleDetailsScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    "₱${widget.price}" +
-                        (widget.name == "Plain Waffle"
-                            ? " (+₱10 Caramel option)"
-                            : ""),
+                    "₱${widget.price}",
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
@@ -157,29 +172,33 @@ class _WaffleDetailsScreenState extends State<WaffleDetailsScreen> {
                   ),
                   const SizedBox(height: 20),
 
-                  /// 🔹 Caramel Option
-                  if (widget.name == "Plain Waffle")
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Checkbox(
-                          value: withCaramel,
-                          activeColor: Colors.brown,
-                          onChanged: (val) =>
-                              setState(() => withCaramel = val ?? false),
-                        ),
-                        const Text(
-                          "Add Caramel (+₱10 each)",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
+                  /// 🔹 Add-on Options
+                  if (widget.name == "Plain Waffle") ...[
+                    CheckboxListTile(
+                      value: withCaramel,
+                      activeColor: Colors.brown,
+                      onChanged: (val) =>
+                          setState(() => withCaramel = val ?? false),
+                      title: const Text(
+                        "Add Caramel Syrup (+₱10 each)",
+                        style: TextStyle(fontSize: 16),
+                      ),
                     ),
+                    CheckboxListTile(
+                      value: withChocolate,
+                      activeColor: Colors.brown,
+                      onChanged: (val) =>
+                          setState(() => withChocolate = val ?? false),
+                      title: const Text(
+                        "Add Chocolate Syrup (+₱10 each)",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
+
+                  const SizedBox(height: 10),
 
                   /// 🔹 Quantity Selector
-                  const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -218,7 +237,7 @@ class _WaffleDetailsScreenState extends State<WaffleDetailsScreen> {
 
                   const SizedBox(height: 20),
 
-                  /// 🕒 Order processing notice
+                  /// 🕒 Order notice
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
@@ -249,11 +268,12 @@ class _WaffleDetailsScreenState extends State<WaffleDetailsScreen> {
 
                   const Spacer(),
 
-                  /// 🔹 Add to Cart
+                  /// 🔹 Add to Cart Button
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
-                      onPressed: quantity == 0 ? null : () => _addToCart(context),
+                      onPressed:
+                          quantity == 0 ? null : () => _addToCart(context),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: quantity == 0
                             ? Colors.grey

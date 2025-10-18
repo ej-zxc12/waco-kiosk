@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'dining_location.dart';
 import 'home_menu.dart' show cartItemCount;
-import 'responsive_layout.dart'; // ✅ Import your responsive layout
+import 'responsive_layout.dart';
+import 'main.dart'; // ✅ Added import to access SplashScreen
 
 class ReceiptScreen extends StatelessWidget {
   final List<Map<String, dynamic>> cartItems;
   final String paymentMethod;
   final String diningLocation;
+  final String receiptOption;
   final int orderNumber;
 
   const ReceiptScreen({
@@ -15,6 +16,7 @@ class ReceiptScreen extends StatelessWidget {
     required this.paymentMethod,
     required this.diningLocation,
     required this.orderNumber,
+    this.receiptOption = "Yes", // ✅ Default
   });
 
   @override
@@ -25,6 +27,7 @@ class ReceiptScreen extends StatelessWidget {
         paymentMethod: paymentMethod,
         diningLocation: diningLocation,
         orderNumber: orderNumber,
+        receiptOption: receiptOption,
         fontScale: 0.9,
         paddingScale: 0.8,
       ),
@@ -33,6 +36,7 @@ class ReceiptScreen extends StatelessWidget {
         paymentMethod: paymentMethod,
         diningLocation: diningLocation,
         orderNumber: orderNumber,
+        receiptOption: receiptOption,
         fontScale: 1.1,
         paddingScale: 1.2,
       ),
@@ -41,6 +45,7 @@ class ReceiptScreen extends StatelessWidget {
         paymentMethod: paymentMethod,
         diningLocation: diningLocation,
         orderNumber: orderNumber,
+        receiptOption: receiptOption,
         fontScale: 1.3,
         paddingScale: 1.5,
       ),
@@ -48,11 +53,11 @@ class ReceiptScreen extends StatelessWidget {
   }
 }
 
-// ✅ Reusable widget for the receipt content
 class _ReceiptContent extends StatelessWidget {
   final List<Map<String, dynamic>> cartItems;
   final String paymentMethod;
   final String diningLocation;
+  final String receiptOption;
   final int orderNumber;
   final double fontScale;
   final double paddingScale;
@@ -61,6 +66,7 @@ class _ReceiptContent extends StatelessWidget {
     required this.cartItems,
     required this.paymentMethod,
     required this.diningLocation,
+    required this.receiptOption,
     required this.orderNumber,
     required this.fontScale,
     required this.paddingScale,
@@ -79,15 +85,8 @@ class _ReceiptContent extends StatelessWidget {
         child: Column(
           children: [
             const SizedBox(height: 20),
-
-            // ✅ Logo
-            Image.asset(
-              "assets/images/wacologo.png",
-              height: 80 * fontScale,
-            ),
-
+            Image.asset("assets/images/wacologo.png", height: 80 * fontScale),
             const SizedBox(height: 10),
-
             Text(
               "The WaCo - San Jose",
               style: TextStyle(
@@ -96,9 +95,7 @@ class _ReceiptContent extends StatelessWidget {
                 color: const Color(0xFF6B4226),
               ),
             ),
-
             const SizedBox(height: 20),
-
             Text(
               "Order Receipt",
               style: TextStyle(
@@ -107,9 +104,7 @@ class _ReceiptContent extends StatelessWidget {
                 color: const Color(0xFF6B4226),
               ),
             ),
-
             const SizedBox(height: 10),
-
             Text(
               "Order No: #$orderNumber",
               style: TextStyle(
@@ -118,10 +113,9 @@ class _ReceiptContent extends StatelessWidget {
                 color: Colors.black87,
               ),
             ),
-
             const SizedBox(height: 20),
 
-            // ✅ Order Items
+            // Item List
             Expanded(
               child: ListView.builder(
                 padding: EdgeInsets.symmetric(horizontal: 20 * paddingScale),
@@ -159,7 +153,6 @@ class _ReceiptContent extends StatelessWidget {
               ),
             ),
 
-            // ✅ Divider
             Container(
               margin: EdgeInsets.symmetric(
                   horizontal: 20 * paddingScale, vertical: 10 * paddingScale),
@@ -167,7 +160,6 @@ class _ReceiptContent extends StatelessWidget {
               color: const Color(0xFF6B4226),
             ),
 
-            // ✅ Total
             Text(
               "Total: ₱$total",
               style: TextStyle(
@@ -176,29 +168,24 @@ class _ReceiptContent extends StatelessWidget {
                 color: const Color(0xFF6B4226),
               ),
             ),
-
             const SizedBox(height: 10),
 
-            // ✅ Payment & Dining Info
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20 * paddingScale),
               child: Column(
                 children: [
-                  Text(
-                    "Payment Method: $paymentMethod",
-                    style: TextStyle(fontSize: 16 * fontScale),
-                  ),
-                  Text(
-                    "Dining: $diningLocation",
-                    style: TextStyle(fontSize: 16 * fontScale),
-                  ),
+                  Text("Payment Method: $paymentMethod",
+                      style: TextStyle(fontSize: 16 * fontScale)),
+                  Text("Dining: $diningLocation",
+                      style: TextStyle(fontSize: 16 * fontScale)),
+                  Text("Receipt: $receiptOption",
+                      style: TextStyle(fontSize: 16 * fontScale)),
                 ],
               ),
             ),
 
             const SizedBox(height: 25),
 
-            // ✅ Show QR code only if Cashless
             if (paymentMethod == "Cashless") ...[
               const SizedBox(height: 25),
               Card(
@@ -207,7 +194,7 @@ class _ReceiptContent extends StatelessWidget {
                 ),
                 elevation: 3,
                 child: Padding(
-                  padding: EdgeInsets.all(16 * paddingScale),
+                  padding: EdgeInsets.all(20 * paddingScale),
                   child: Column(
                     children: [
                       Text(
@@ -218,11 +205,12 @@ class _ReceiptContent extends StatelessWidget {
                           color: const Color(0xFF6B4226),
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 15),
                       Image.asset(
                         "assets/images/qr.png",
-                        width: 180 * fontScale,
-                        height: 180 * fontScale,
+                        width: 150 * fontScale,
+                        height: 150 * fontScale,
+                        fit: BoxFit.contain,
                       ),
                     ],
                   ),
@@ -232,7 +220,6 @@ class _ReceiptContent extends StatelessWidget {
 
             const SizedBox(height: 25),
 
-            // ✅ Back Button
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF6B4226),
@@ -289,10 +276,11 @@ class _ReceiptContent extends StatelessWidget {
                     );
                   },
                 ).then((_) {
+                  // ✅ Go back to SplashScreen (main.dart)
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const DiningLocationScreen(),
+                      builder: (context) => const SplashScreen(),
                     ),
                     (route) => false,
                   );

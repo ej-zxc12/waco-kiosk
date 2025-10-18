@@ -1,204 +1,195 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'dining_location.dart'; // For back navigation
+import 'dining_location.dart';
 import 'milktea_screen.dart';
 import 'iced_coffee_screen.dart';
 import 'fruit_soda_screen.dart';
 import 'fruit_yogurt_screen.dart';
 import 'waffle_screen.dart';
 import 'helpers.dart';
-import 'cart_screen.dart'; // ✅ import CartScreen
+import 'cart_screen.dart';
+import 'main.dart'; // ✅ for SplashScreen
 
-/// 🔹 Global cart counter (can be updated anywhere in the app)
+/// 🔹 Global cart counter
 ValueNotifier<int> cartItemCount = ValueNotifier<int>(0);
 
-/// 🔹 Global cart items list (accessible anywhere)
+/// 🔹 Global cart items list
 List<Map<String, dynamic>> cartItems = [];
 
 class HomeMenu extends StatelessWidget {
-  final String diningLocation; // ✅ still passed but hidden in UI
+  final String diningLocation;
 
   const HomeMenu({super.key, required this.diningLocation});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5E6D3), // Beige background
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            /// HEADER (Back + Title + Cart Button with badge)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Row(
-                children: [
-                  /// Back Button
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const DiningLocationScreen(),
-                        ),
-                      );
-                    },
-                    child: const Row(
-                      children: [
-                        Icon(Icons.arrow_back, color: Colors.black, size: 28),
-                        SizedBox(width: 8),
-                        Text(
-                          "Back",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+    return IdleWrapper( // ✅ Inactivity watcher
+      idleDuration: const Duration(minutes: 1), // 1 minute idle
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF5E6D3),
+        body: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              /// HEADER
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: Row(
+                  children: [
+                    /// Back Button
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const DiningLocationScreen(),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const Spacer(),
-
-                  /// Title Only
-                  const Text(
-                    "MENU",
-                    style: TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.5,
-                    ),
-                  ),
-
-                  const Spacer(),
-
-                  /// 🔹 Cart Button with badge
-                  ValueListenableBuilder<int>(
-                    valueListenable: cartItemCount,
-                    builder: (context, count, _) {
-                      return Stack(
-                        clipBehavior: Clip.none,
+                        );
+                      },
+                      child: const Row(
                         children: [
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => CartScreen(
-                                    cartItems: cartItems,
-                                    diningLocation: diningLocation,
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Container(
-                              height: 50,
-                              width: 50,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(color: Colors.black, width: 2),
-                                borderRadius: BorderRadius.circular(16),
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Colors.black26,
-                                    blurRadius: 6,
-                                    offset: Offset(3, 4),
-                                  ),
-                                ],
-                              ),
-                              padding: const EdgeInsets.all(6),
-                              child: Image.asset(
-                                "assets/images/cart_logo.png",
-                                fit: BoxFit.contain,
-                              ),
+                          Icon(Icons.arrow_back, color: Colors.black, size: 28),
+                          SizedBox(width: 8),
+                          Text(
+                            "Back",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                          if (count > 0)
-                            Positioned(
-                              right: -4,
-                              top: -4,
-                              child: Container(
-                                padding: const EdgeInsets.all(5),
-                                decoration: const BoxDecoration(
-                                  color: Colors.red,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Text(
-                                  "$count",
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
+                        ],
+                      ),
+                    ),
+                    const Spacer(),
+                    const Text(
+                      "MENU",
+                      style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                    const Spacer(),
+
+                    /// Cart Button
+                    ValueListenableBuilder<int>(
+                      valueListenable: cartItemCount,
+                      builder: (context, count, _) {
+                        return Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => CartScreen(
+                                      cartItems: cartItems,
+                                      diningLocation: diningLocation,
+                                    ),
                                   ),
+                                );
+                              },
+                              child: Container(
+                                height: 50,
+                                width: 50,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border:
+                                      Border.all(color: Colors.black, width: 2),
+                                  borderRadius: BorderRadius.circular(16),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Colors.black26,
+                                      blurRadius: 6,
+                                      offset: Offset(3, 4),
+                                    ),
+                                  ],
+                                ),
+                                padding: const EdgeInsets.all(6),
+                                child: Image.asset(
+                                  "assets/images/cart_logo.png",
+                                  fit: BoxFit.contain,
                                 ),
                               ),
                             ),
-                        ],
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 10),
-
-            /// MENU ITEMS
-            Expanded(
-              child: GridView.count(
-                crossAxisCount: 2,
-                mainAxisSpacing: 25,
-                crossAxisSpacing: 25,
-                padding: const EdgeInsets.all(24),
-                children: [
-                  buildMenuItem(
-                    context,
-                    "ICED COFFEE",
-                    "assets/images/Iced-Coffee_img-removebg-preview.png",
-                  ),
-                  buildMenuItem(
-                    context,
-                    "MILKTEA",
-                    "assets/images/Milktea-removebg-preview.png",
-                  ),
-                  buildMenuItem(
-                    context,
-                    "FRUIT SODA",
-                    "assets/images/FruitSOda-removebg-preview.png",
-                  ),
-                  buildMenuItem(
-                    context,
-                    "FRUIT YOGURT",
-                    "assets/images/Fruit_yogurt-removebg-preview.png",
-                  ),
-                  buildMenuItem(
-                    context,
-                    "WAFFLE",
-                    "assets/images/Waffle Oreo.png",
-                  ),
-                ],
-              ),
-            ),
-
-            /// CANCEL ORDER BUTTON
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: SizedBox(
-                width: double.infinity,
-                child: AnimatedButton(
-                  label: "Cancel Order",
-                  onPressed: () {
-                    showCancelConfirmation(context);
-                  },
+                            if (count > 0)
+                              Positioned(
+                                right: -4,
+                                top: -4,
+                                child: Container(
+                                  padding: const EdgeInsets.all(5),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.red,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Text(
+                                    "$count",
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        );
+                      },
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ],
+
+              const SizedBox(height: 10),
+
+              /// MENU GRID
+              Expanded(
+                child: GridView.count(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 25,
+                  crossAxisSpacing: 25,
+                  padding: const EdgeInsets.all(24),
+                  children: [
+                    buildMenuItem(
+                        context,
+                        "ICED COFFEE",
+                        "assets/images/Iced-Coffee_img-removebg-preview.png"),
+                    buildMenuItem(context, "MILKTEA",
+                        "assets/images/Milktea-removebg-preview.png"),
+                    buildMenuItem(context, "FRUIT SODA",
+                        "assets/images/FruitSOda-removebg-preview.png"),
+                    buildMenuItem(context, "FRUIT YOGURT",
+                        "assets/images/Fruit_yogurt-removebg-preview.png"),
+                    buildMenuItem(context, "WAFFLE",
+                        "assets/images/Waffle Oreo.png"),
+                  ],
+                ),
+              ),
+
+              /// CANCEL ORDER
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: AnimatedButton(
+                    label: "Cancel Order",
+                    onPressed: () {
+                      showCancelConfirmation(context);
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  /// 🔹 Reusable Menu Item Widget
+  /// 🔹 Menu Item Builder
   Widget buildMenuItem(BuildContext context, String title, String imagePath) {
     return AnimatedScaleButton(
       onTap: () {
@@ -249,11 +240,11 @@ class HomeMenu extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: Colors.brown, width: 3),
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               color: Colors.black26,
               blurRadius: 6,
-              offset: const Offset(3, 4),
+              offset: Offset(3, 4),
             ),
           ],
         ),
@@ -273,9 +264,9 @@ class HomeMenu extends StatelessWidget {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 12),
-              decoration: BoxDecoration(
-                color: const Color(0xFF6B4226),
-                borderRadius: const BorderRadius.vertical(
+              decoration: const BoxDecoration(
+                color: Color(0xFF6B4226),
+                borderRadius: BorderRadius.vertical(
                   bottom: Radius.circular(18),
                 ),
               ),
@@ -292,6 +283,132 @@ class HomeMenu extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// 🕒 Idle Timeout Wrapper with Data Reset
+class IdleWrapper extends StatefulWidget {
+  final Widget child;
+  final Duration idleDuration;
+
+  const IdleWrapper({
+    super.key,
+    required this.child,
+    this.idleDuration = const Duration(minutes: 1),
+  });
+
+  @override
+  State<IdleWrapper> createState() => _IdleWrapperState();
+}
+
+class _IdleWrapperState extends State<IdleWrapper> {
+  Timer? _timer;
+  bool _showWarning = false;
+  int _countdown = 10;
+
+  void _resetTimer() {
+    _timer?.cancel();
+    _showWarning = false;
+    _countdown = 10;
+    _timer = Timer(widget.idleDuration, _onIdle);
+  }
+
+  void _onIdle() {
+    setState(() => _showWarning = true);
+
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_countdown == 0) {
+        timer.cancel();
+
+        // 🧹 Clear all kiosk data before returning home
+        cartItems.clear();
+        cartItemCount.value = 0;
+
+        if (mounted) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const SplashScreen()),
+            (route) => false,
+          );
+        }
+      } else {
+        setState(() => _countdown--);
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _resetTimer();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _onUserActivity([_]) {
+    if (_showWarning) {
+      setState(() => _showWarning = false);
+    }
+    _resetTimer();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Listener(
+      onPointerDown: _onUserActivity,
+      child: Stack(
+        children: [
+          widget.child,
+          if (_showWarning)
+            Container(
+              color: Colors.black54,
+              alignment: Alignment.center,
+              child: Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.hourglass_empty,
+                        color: Color(0xFF6B4226), size: 60),
+                    const SizedBox(height: 12),
+                    const Text(
+                      "No activity detected",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF6B4226),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      "Returning to Home in $_countdown seconds...",
+                      style: const TextStyle(
+                          fontSize: 16, color: Colors.black87),
+                    ),
+                    const SizedBox(height: 12),
+                    ElevatedButton(
+                      onPressed: _onUserActivity,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF6B4226),
+                        foregroundColor: Colors.white,
+                      ),
+                      child: const Text("Continue Order"),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

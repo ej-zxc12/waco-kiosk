@@ -296,7 +296,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   SizedBox(width: 8),
                   Flexible(
                     child: Text(
-                      "Please note: Orders typically take about 3–5 minutes to process, depending on the number of customers ahead.",
+                      "Your order will be processed within 3–5 minutes depending on queue.",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 14,
