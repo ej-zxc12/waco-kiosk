@@ -65,7 +65,7 @@ class FruitYogurtScreen extends StatelessWidget {
                   buildProductItem(context, "Lychee", "assets/images/FY lychee.png"),
                   buildProductItem(context, "Four Seasons", "assets/images/FY four.png"),
                   buildProductItem(context, "Blue Lemonade", "assets/images/FY bluelemo.png"),
-                  buildProductItem(context, "Apple Green", "assets/Fruit_yogurt-removebg-preview.png"),
+                  buildProductItem(context, "Apple Green", "assets/images/AppleGreen.png"),
                 ],
               ),
             ),

@@ -97,6 +97,9 @@ class _WaffleDetailsScreenState extends State<WaffleDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final totalPrice = _calculateTotal();
+    final size = MediaQuery.of(context).size;
+    final shortest = size.shortestSide;
+    final s = (shortest / 800).clamp(0.8, 1.6);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5E6D3),
@@ -117,14 +120,14 @@ class _WaffleDetailsScreenState extends State<WaffleDetailsScreen> {
           /// 🧇 Product Image
           Container(
             color: const Color(0xFFF5E6D3),
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16 * s),
             child: Center(
               child: Container(
-                height: 160,
-                width: 160,
+                height: 160 * s,
+                width: 160 * s,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  border: Border.all(color: Colors.brown.shade700, width: 2),
+                  border: Border.all(color: Colors.brown.shade700, width: 2 * s),
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
@@ -135,7 +138,7 @@ class _WaffleDetailsScreenState extends State<WaffleDetailsScreen> {
                   ],
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(12.0),
+                  padding: EdgeInsets.all(12.0 * s),
                   child: Image.asset(widget.imagePath, fit: BoxFit.contain),
                 ),
               ),
@@ -149,124 +152,133 @@ class _WaffleDetailsScreenState extends State<WaffleDetailsScreen> {
                 color: Colors.white,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
               ),
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(24 * s),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
-                    widget.name,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.brown,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    "₱${widget.price}",
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  /// 🔹 Add-on Options
-                  if (widget.name == "Plain Waffle") ...[
-                    CheckboxListTile(
-                      value: withCaramel,
-                      activeColor: Colors.brown,
-                      onChanged: (val) =>
-                          setState(() => withCaramel = val ?? false),
-                      title: const Text(
-                        "Add Caramel Syrup (+₱10 each)",
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
-                    CheckboxListTile(
-                      value: withChocolate,
-                      activeColor: Colors.brown,
-                      onChanged: (val) =>
-                          setState(() => withChocolate = val ?? false),
-                      title: const Text(
-                        "Add Chocolate Syrup (+₱10 each)",
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
-                  ],
-
-                  const SizedBox(height: 10),
-
-                  /// 🔹 Quantity Selector
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        onPressed: _decreaseQty,
-                        icon: const Icon(Icons.remove_circle,
-                            color: Colors.brown, size: 32),
-                      ),
-                      Text(
-                        "$quantity",
-                        style: const TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: _increaseQty,
-                        icon: const Icon(Icons.add_circle,
-                            color: Colors.brown, size: 32),
-                      ),
-                    ],
-                  ),
-
-                  /// 🔹 Total Price
-                  if (quantity > 0) ...[
-                    const SizedBox(height: 10),
-                    Text(
-                      "Total: ₱$totalPrice",
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green,
-                      ),
-                    ),
-                  ],
-
-                  const SizedBox(height: 20),
-
-                  /// 🕒 Order notice
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFF3E0),
-                      border: Border.all(color: Colors.orange.shade200),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.access_time,
-                            color: Colors.orange, size: 20),
-                        SizedBox(width: 8),
-                        Flexible(
-                          child: Text(
-                            "Your order will be processed within 3–5 minutes depending on queue.",
-                            textAlign: TextAlign.center,
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            widget.name,
                             style: TextStyle(
-                              fontSize: 14,
+                              fontSize: 24 * s,
+                              fontWeight: FontWeight.bold,
                               color: Colors.brown,
-                              fontWeight: FontWeight.w500,
                             ),
                           ),
-                        ),
-                      ],
+                          SizedBox(height: 8 * s),
+                          Text(
+                            "₱${widget.price}",
+                            style: TextStyle(
+                              fontSize: 18 * s,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          SizedBox(height: 20 * s),
+
+                          /// 🔹 Add-on Options
+                          if (widget.name == "Plain Waffle") ...[
+                            CheckboxListTile(
+                              value: withCaramel,
+                              activeColor: Colors.brown,
+                              onChanged: (val) =>
+                                  setState(() => withCaramel = val ?? false),
+                              title: Text(
+                                "Add Caramel Syrup (+₱10 each)",
+                                style: TextStyle(fontSize: 16 * s),
+                              ),
+                            ),
+                            CheckboxListTile(
+                              value: withChocolate,
+                              activeColor: Colors.brown,
+                              onChanged: (val) =>
+                                  setState(() => withChocolate = val ?? false),
+                              title: Text(
+                                "Add Chocolate Syrup (+₱10 each)",
+                                style: TextStyle(fontSize: 16 * s),
+                              ),
+                            ),
+                          ],
+
+                          SizedBox(height: 10 * s),
+
+                          /// 🔹 Quantity Selector
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              IconButton(
+                                onPressed: _decreaseQty,
+                                icon: Icon(Icons.remove_circle,
+                                    color: Colors.brown, size: 32 * s),
+                              ),
+                              Text(
+                                "$quantity",
+                                style: TextStyle(
+                                  fontSize: 22 * s,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              IconButton(
+                                onPressed: _increaseQty,
+                                icon: Icon(Icons.add_circle,
+                                    color: Colors.brown, size: 32 * s),
+                              ),
+                            ],
+                          ),
+
+                          /// 🔹 Total Price
+                          if (quantity > 0) ...[
+                            SizedBox(height: 10 * s),
+                            Text(
+                              "Total: ₱$totalPrice",
+                              style: TextStyle(
+                                fontSize: 20 * s,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green,
+                              ),
+                            ),
+                          ],
+
+                          SizedBox(height: 20 * s),
+
+                          /// 🕒 Order notice
+                          Container(
+                            padding: EdgeInsets.all(12 * s),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFFF3E0),
+                              border: Border.all(color: Colors.orange.shade200),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.access_time,
+                                    color: Colors.orange, size: 20),
+                                SizedBox(width: 8),
+                                Flexible(
+                                  child: Text(
+                                    "Your order will be processed within 3–5 minutes depending on queue.",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.brown,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
 
-                  const Spacer(),
+                  SizedBox(height: 16 * s),
 
                   /// 🔹 Add to Cart Button
                   SizedBox(
@@ -279,17 +291,17 @@ class _WaffleDetailsScreenState extends State<WaffleDetailsScreen> {
                             ? Colors.grey
                             : const Color(0xFF6B4226),
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 30, vertical: 14),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 30 * s, vertical: 14 * s),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
                       icon: const Icon(Icons.add_shopping_cart),
-                      label: const Text(
+                      label: Text(
                         "Add to Cart",
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 18 * s,
                           fontWeight: FontWeight.bold,
                         ),
                       ),

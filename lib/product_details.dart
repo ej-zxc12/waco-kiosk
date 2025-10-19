@@ -84,6 +84,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final shortest = size.shortestSide;
+    final s = (shortest / 800).clamp(0.8, 1.6);
     return Scaffold(
       backgroundColor: const Color(0xFFF5E6D3),
       appBar: AppBar(
@@ -97,7 +100,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             valueListenable: cartItemCount,
             builder: (context, count, _) {
               return Padding(
-                padding: const EdgeInsets.only(right: 12.0, top: 6, bottom: 6),
+                padding: EdgeInsets.only(right: 12.0 * s, top: 6 * s, bottom: 6 * s),
                 child: Stack(
                   clipBehavior: Clip.none,
                   children: [
@@ -115,11 +118,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       },
                       borderRadius: BorderRadius.circular(16),
                       child: Container(
-                        padding: const EdgeInsets.all(10),
+                        padding: EdgeInsets.all(10 * s),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Colors.brown, width: 2),
+                          border: Border.all(color: Colors.brown, width: 2 * s),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.brown.withOpacity(0.3),
@@ -130,25 +133,25 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         ),
                         child: Image.asset(
                           "assets/images/cart_logo.png",
-                          height: 30,
+                          height: 30 * s,
                           fit: BoxFit.contain,
                         ),
                       ),
                     ),
                     if (count > 0)
                       Positioned(
-                        right: -4,
-                        top: -4,
+                        right: -4 * s,
+                        top: -4 * s,
                         child: Container(
-                          padding: const EdgeInsets.all(5),
+                          padding: EdgeInsets.all(5 * s),
                           decoration: const BoxDecoration(
                             color: Colors.red,
                             shape: BoxShape.circle,
                           ),
                           child: Text(
                             "$count",
-                            style: const TextStyle(
-                              fontSize: 12,
+                            style: TextStyle(
+                              fontSize: 12 * s,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
@@ -163,18 +166,18 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16 * s),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // 🧇 Product Image
             Center(
               child: Container(
-                height: 160,
-                width: 160,
+                height: 160 * s,
+                width: 160 * s,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  border: Border.all(color: Colors.brown.shade700, width: 2),
+                  border: Border.all(color: Colors.brown.shade700, width: 2 * s),
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
@@ -185,26 +188,26 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   ],
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(12.0),
+                  padding: EdgeInsets.all(12.0 * s),
                   child: Image.asset(widget.imagePath, fit: BoxFit.contain),
                 ),
               ),
             ),
 
-            const SizedBox(height: 12),
+            SizedBox(height: 12 * s),
 
             // 🧾 Product Name below image
             Text(
               widget.productName,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 24,
+              style: TextStyle(
+                fontSize: 24 * s,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF6B4226),
+                color: const Color(0xFF6B4226),
               ),
             ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: 20 * s),
 
             ExpandableSection(
               key: ValueKey(_resetKey),
@@ -213,19 +216,19 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               onTotalChanged: _updateGrandTotal,
             ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: 20 * s),
 
             if (_grandTotal > 0)
               Text(
                 "Grand Total: ₱$_grandTotal",
-                style: const TextStyle(
-                  fontSize: 20,
+                style: TextStyle(
+                  fontSize: 20 * s,
                   fontWeight: FontWeight.bold,
                   color: Colors.brown,
                 ),
               ),
 
-            const SizedBox(height: 40),
+            SizedBox(height: 40 * s),
 
             AnimatedButton(
               label: "Add to Cart",
@@ -240,7 +243,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               },
             ),
 
-            const SizedBox(height: 16),
+            SizedBox(height: 16 * s),
 
             Center(
               child: OutlinedButton.icon(
@@ -255,16 +258,16 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   );
                 },
                 icon: const Icon(Icons.add_shopping_cart, color: Colors.brown),
-                label: const Text(
+                label: Text(
                   "Add More Items",
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 16 * s,
                     fontWeight: FontWeight.bold,
                     color: Colors.brown,
                   ),
                 ),
                 style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Colors.brown, width: 2),
+                  side: BorderSide(color: Colors.brown, width: 2 * s),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -272,15 +275,15 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               ),
             ),
 
-            const SizedBox(height: 30),
+            SizedBox(height: 30 * s),
 
             // 🕒 Order Processing Note
             Container(
-              padding: const EdgeInsets.all(14),
+              padding: EdgeInsets.all(14 * s),
               decoration: BoxDecoration(
                 color: const Color(0xFFFFF8E1),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.brown.shade300, width: 1.5),
+                border: Border.all(color: Colors.brown.shade300, width: 1.5 * s),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.brown.withOpacity(0.1),
@@ -309,10 +312,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               ),
             ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: 20 * s),
           ],
         ),
       ),
     );
   }
 }
+

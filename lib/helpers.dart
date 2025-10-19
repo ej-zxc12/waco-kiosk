@@ -9,26 +9,29 @@ Future<void> showCancelConfirmation(BuildContext context) async {
     context: context,
     barrierDismissible: false,
     builder: (BuildContext context) {
+      final size = MediaQuery.of(context).size;
+      final shortest = size.shortestSide;
+      final s = (shortest / 800).clamp(0.8, 1.6);
       return Dialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
         backgroundColor: const Color(0xFFF5E6D3),
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: EdgeInsets.all(20.0 * s),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
+              Text(
                 "Do you want to cancel your order?",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 22,
+                  fontSize: 22 * s,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20 * s),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -37,20 +40,20 @@ Future<void> showCancelConfirmation(BuildContext context) async {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                       foregroundColor: Colors.black,
-                      side: const BorderSide(color: Colors.black, width: 2),
+                      side: BorderSide(color: Colors.black, width: 2 * s),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 12,
-                        horizontal: 24,
+                      padding: EdgeInsets.symmetric(
+                        vertical: 12 * s,
+                        horizontal: 24 * s,
                       ),
                     ),
                     onPressed: () => Navigator.of(context).pop(),
-                    child: const Text(
+                    child: Text(
                       "No",
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 18 * s,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -64,9 +67,9 @@ Future<void> showCancelConfirmation(BuildContext context) async {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 12,
-                        horizontal: 24,
+                      padding: EdgeInsets.symmetric(
+                        vertical: 12 * s,
+                        horizontal: 24 * s,
                       ),
                     ),
                     onPressed: () {
@@ -88,10 +91,10 @@ Future<void> showCancelConfirmation(BuildContext context) async {
                         );
                       }
                     },
-                    child: const Text(
+                    child: Text(
                       "Yes",
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 18 * s,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -186,6 +189,9 @@ class _AnimatedButtonState extends State<AnimatedButton> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final shortest = size.shortestSide;
+    final s = (shortest / 800).clamp(0.8, 1.6);
     return GestureDetector(
       onTapDown: _onTapDown,
       onTapUp: _onTapUp,
@@ -195,17 +201,17 @@ class _AnimatedButtonState extends State<AnimatedButton> {
         duration: const Duration(milliseconds: 120),
         curve: Curves.easeOut,
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 18),
+          padding: EdgeInsets.symmetric(vertical: 18 * s),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: Colors.black, width: 2),
+            border: Border.all(color: Colors.black, width: 2 * s),
           ),
           child: Center(
             child: Text(
               widget.label,
-              style: const TextStyle(
-                fontSize: 20,
+              style: TextStyle(
+                fontSize: 20 * s,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1.2,
                 color: Colors.black,
@@ -277,6 +283,9 @@ class _ExpandableSectionState extends State<ExpandableSection> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final shortest = size.shortestSide;
+    final s = (shortest / 800).clamp(0.8, 1.6);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -288,19 +297,19 @@ class _ExpandableSectionState extends State<ExpandableSection> {
             children: [
               Text(
                 widget.title,
-                style: const TextStyle(
-                  fontSize: 18,
+                style: TextStyle(
+                  fontSize: 18 * s,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               Icon(
                 _expanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                size: 28,
+                size: 28 * s,
               ),
             ],
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8 * s),
 
         /// EXPANDED OPTIONS
         if (_expanded) _buildExpandedOptions(),
@@ -308,11 +317,11 @@ class _ExpandableSectionState extends State<ExpandableSection> {
         /// TOTAL PRICE (only show if something selected)
         if (_expanded && totalPrice > 0)
           Padding(
-            padding: const EdgeInsets.only(top: 8.0, left: 4),
+            padding: EdgeInsets.only(top: 8.0 * s, left: 4 * s),
             child: Text(
               "Total: ₱$totalPrice",
-              style: const TextStyle(
-                fontSize: 16,
+              style: TextStyle(
+                fontSize: 16 * s,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -323,13 +332,16 @@ class _ExpandableSectionState extends State<ExpandableSection> {
 
   /// Expanded Option List
   Widget _buildExpandedOptions() {
+    final size = MediaQuery.of(context).size;
+    final shortest = size.shortestSide;
+    final s = (shortest / 800).clamp(0.8, 1.6);
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(12),
-      margin: const EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.all(12 * s),
+      margin: EdgeInsets.only(bottom: 12 * s),
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border.all(color: Colors.black, width: 2),
+        border: Border.all(color: Colors.black, width: 2 * s),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -338,7 +350,7 @@ class _ExpandableSectionState extends State<ExpandableSection> {
             ListTile(
               title: Text(
                 "${widget.options[i]['label']} - ₱${widget.options[i]['price']}",
-                style: const TextStyle(fontSize: 16),
+                style: TextStyle(fontSize: 16 * s),
               ),
               trailing: _buildQuantityControls(i),
             ),
@@ -349,6 +361,9 @@ class _ExpandableSectionState extends State<ExpandableSection> {
 
   /// Quantity Controls
   Widget _buildQuantityControls(int index) {
+    final size = MediaQuery.of(context).size;
+    final shortest = size.shortestSide;
+    final s = (shortest / 800).clamp(0.8, 1.6);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -365,7 +380,7 @@ class _ExpandableSectionState extends State<ExpandableSection> {
         ),
         Text(
           _quantities[index] == 0 ? "" : "${_quantities[index]}",
-          style: const TextStyle(fontSize: 18),
+          style: TextStyle(fontSize: 18 * s),
         ),
         IconButton(
           onPressed: () {
@@ -380,3 +395,4 @@ class _ExpandableSectionState extends State<ExpandableSection> {
     );
   }
 }
+

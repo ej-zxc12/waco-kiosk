@@ -57,6 +57,7 @@ flutter:
     - assets/images/counter.png
     - assets/images/Cashless payment.png
     - assets/images/qr.png
+    - assets/images/AppleGreen.png
 
 
 flutter_launcher_icons:
