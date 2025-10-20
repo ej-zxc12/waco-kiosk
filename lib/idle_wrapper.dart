@@ -93,9 +93,15 @@ class _IdleWrapperState extends State<IdleWrapper> {
       builder: (context, enabled, child) {
         if (!enabled) {
           _timer?.cancel();
+          _timer = null; // ensure timer is considered inactive while disabled
           _showWarning = false;
           _navigated = false;
           return widget.child;
+        }
+
+        // If idle was previously disabled and is now enabled, ensure the timer is armed
+        if (_timer == null) {
+          _resetTimer();
         }
 
         return Listener(

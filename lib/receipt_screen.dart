@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'home_menu.dart' show cartItemCount;
 import 'responsive_layout.dart';
-import 'splash_screen.dart'; // ✅ import SplashScreen directly
+import 'splash_screen.dart';
+import 'api_service.dart'; // ✅ Make sure this file is in your lib folder
 
 class ReceiptScreen extends StatelessWidget {
   final List<Map<String, dynamic>> cartItems;
@@ -16,7 +17,7 @@ class ReceiptScreen extends StatelessWidget {
     required this.paymentMethod,
     required this.diningLocation,
     required this.orderNumber,
-    this.receiptOption = "Yes", // ✅ Default
+    this.receiptOption = "Yes",
   });
 
   @override
@@ -121,7 +122,7 @@ class _ReceiptContent extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              // Item List
+              // 🧾 List of Ordered Items
               ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -161,7 +162,9 @@ class _ReceiptContent extends StatelessWidget {
 
               Container(
                 margin: EdgeInsets.symmetric(
-                    horizontal: 20 * paddingScale, vertical: 10 * paddingScale),
+                  horizontal: 20 * paddingScale,
+                  vertical: 10 * paddingScale,
+                ),
                 height: 2,
                 color: const Color(0xFF6B4226),
               ),
@@ -235,18 +238,68 @@ class _ReceiptContent extends StatelessWidget {
 
               const SizedBox(height: 25),
 
+              // ✅ BUTTON TO UPLOAD ORDER AND GO HOME
               Center(
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF6B4226),
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(
-                        horizontal: 60 * paddingScale, vertical: 20 * paddingScale),
+                      horizontal: 60 * paddingScale,
+                      vertical: 20 * paddingScale,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(18),
                     ),
                   ),
                   onPressed: () async {
+                    // 🔄 Upload order to your desktop app via API
+                    final ok = await uploadOrder(
+                      orderNumber: orderNumber,
+                      cartItems: cartItems,
+                      paymentMethod: paymentMethod,
+                      diningLocation: diningLocation,
+                      receiptOption: receiptOption,
+                    );
+
+                    if (!ok) {
+                      // ❌ Upload Failed
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) => AlertDialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          title: const Text(
+                            "❌ Order Failed",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF6B4226),
+                            ),
+                          ),
+                          content: const Text(
+                            "Unable to send order. Please check your network and try again.",
+                            style: TextStyle(fontSize: 18),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text(
+                                "OK",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF6B4226),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                      return;
+                    }
+
+                    // ✅ Upload Success
                     cartItems.clear();
                     cartItemCount.value = 0;
 
@@ -255,9 +308,7 @@ class _ReceiptContent extends StatelessWidget {
                       barrierDismissible: false,
                       builder: (context) {
                         Future.delayed(const Duration(seconds: 3), () {
-                          if (Navigator.canPop(context)) {
-                            Navigator.pop(context);
-                          }
+                          if (Navigator.canPop(context)) Navigator.pop(context);
                         });
 
                         return AlertDialog(
@@ -277,9 +328,7 @@ class _ReceiptContent extends StatelessWidget {
                           ),
                           actions: [
                             TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
+                              onPressed: () => Navigator.pop(context),
                               child: const Text(
                                 "OK",
                                 style: TextStyle(
@@ -292,7 +341,6 @@ class _ReceiptContent extends StatelessWidget {
                         );
                       },
                     ).then((_) {
-                      // ✅ Go back to SplashScreen (main.dart)
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(

@@ -20,7 +20,7 @@ class KioskApp extends StatelessWidget {
       ),
       navigatorKey: Nav.navKey,
       builder: (context, child) => IdleWrapper(
-        idleDuration: const Duration(seconds: 60),
+        idleDuration: const Duration(seconds: 15),
         child: child ?? const SizedBox.shrink(),
       ),
       home: const SplashScreen(),
