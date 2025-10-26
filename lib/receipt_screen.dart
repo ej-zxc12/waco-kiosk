@@ -88,7 +88,33 @@ class _ReceiptContent extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 20),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: 16 * paddingScale, vertical: 12 * paddingScale),
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Row(
+                        children: [
+                          Icon(Icons.arrow_back,
+                              color: Colors.black, size: 28 * fontScale),
+                          const SizedBox(width: 8),
+                          Text(
+                            "Back",
+                            style: TextStyle(
+                              fontSize: 20 * fontScale,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Spacer(),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
               Image.asset("assets/images/wacologo.png", height: 80 * fontScale),
               const SizedBox(height: 10),
               Text(
@@ -240,16 +266,16 @@ class _ReceiptContent extends StatelessWidget {
 
               // ✅ BUTTON TO UPLOAD ORDER AND GO HOME
               Center(
-                child: ElevatedButton(
+                child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF6B4226),
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(
-                      horizontal: 60 * paddingScale,
-                      vertical: 20 * paddingScale,
+                      horizontal: 24 * paddingScale,
+                      vertical: 14 * paddingScale,
                     ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(18),
+                      borderRadius: BorderRadius.circular(14),
                     ),
                   ),
                   onPressed: () async {
@@ -350,8 +376,9 @@ class _ReceiptContent extends StatelessWidget {
                       );
                     });
                   },
-                  child: Text(
-                    "Back to Home",
+                  icon: const Icon(Icons.home),
+                  label: Text(
+                    "Return to Home Menu",
                     style: TextStyle(
                       fontSize: 20 * fontScale,
                       fontWeight: FontWeight.bold,

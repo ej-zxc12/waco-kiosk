@@ -1,16 +1,13 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'dining_location.dart';
-import 'helpers.dart';
-import 'cart_screen.dart';
-import 'api_service.dart'; // ✅ Import your API connection file
-
-// ✅ Import your product screens (still works fine)
 import 'milktea_screen.dart';
 import 'iced_coffee_screen.dart';
 import 'fruit_soda_screen.dart';
 import 'fruit_yogurt_screen.dart';
 import 'waffle_screen.dart';
+import 'helpers.dart';
+import 'cart_screen.dart';
+import 'promo_products_screen.dart'; // ✅ NEW IMPORT for promo products
 
 /// 🔹 Global cart counter
 ValueNotifier<int> cartItemCount = ValueNotifier<int>(0);
@@ -18,45 +15,10 @@ ValueNotifier<int> cartItemCount = ValueNotifier<int>(0);
 /// 🔹 Global cart items list
 List<Map<String, dynamic>> cartItems = [];
 
-class HomeMenu extends StatefulWidget {
+class HomeMenu extends StatelessWidget {
   final String diningLocation;
 
   const HomeMenu({super.key, required this.diningLocation});
-
-  @override
-  State<HomeMenu> createState() => _HomeMenuState();
-}
-
-class _HomeMenuState extends State<HomeMenu> {
-  List<Map<String, dynamic>> _products = [];
-  bool _isLoading = true;
-  Timer? _refreshTimer;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadProducts();
-
-    // ✅ Auto-refresh every 15 seconds to get new/updated products
-    _refreshTimer = Timer.periodic(const Duration(seconds: 15), (timer) {
-      _loadProducts();
-    });
-  }
-
-  Future<void> _loadProducts() async {
-    setState(() => _isLoading = true);
-    final products = await fetchProducts();
-    setState(() {
-      _products = products;
-      _isLoading = false;
-    });
-  }
-
-  @override
-  void dispose() {
-    _refreshTimer?.cancel();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +30,8 @@ class _HomeMenuState extends State<HomeMenu> {
           children: [
             /// HEADER
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 children: [
                   /// Back Button
@@ -120,7 +83,7 @@ class _HomeMenuState extends State<HomeMenu> {
                                 MaterialPageRoute(
                                   builder: (context) => CartScreen(
                                     cartItems: cartItems,
-                                    diningLocation: widget.diningLocation,
+                                    diningLocation: diningLocation,
                                   ),
                                 ),
                               );
@@ -130,8 +93,7 @@ class _HomeMenuState extends State<HomeMenu> {
                               width: 50,
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                border:
-                                    Border.all(color: Colors.black, width: 2),
+                                border: Border.all(color: Colors.black, width: 2),
                                 borderRadius: BorderRadius.circular(16),
                                 boxShadow: const [
                                   BoxShadow(
@@ -178,44 +140,28 @@ class _HomeMenuState extends State<HomeMenu> {
 
             const SizedBox(height: 10),
 
-            /// MENU GRID OR LOADING STATE
+            /// STATIC MENU GRID
             Expanded(
-              child: _isLoading
-                  ? const Center(
-                      child: CircularProgressIndicator(
-                        color: Color(0xFF6B4226),
-                      ),
-                    )
-                  : _products.isEmpty
-                      ? const Center(
-                          child: Text(
-                            "No products available.",
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: Colors.grey,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        )
-                      : GridView.builder(
-                          padding: const EdgeInsets.all(24),
-                          itemCount: _products.length,
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            mainAxisSpacing: 25,
-                            crossAxisSpacing: 25,
-                          ),
-                          itemBuilder: (context, index) {
-                            final product = _products[index];
-                            return buildMenuItem(
-                              context,
-                              product['category'] ?? 'UNKNOWN',
-                              product['image'] ??
-                                  'assets/images/default_product.png',
-                            );
-                          },
-                        ),
+              child: GridView.count(
+                crossAxisCount: 2,
+                mainAxisSpacing: 25,
+                crossAxisSpacing: 25,
+                padding: const EdgeInsets.all(24),
+                children: [
+                  buildMenuItem(context, "ICED COFFEE",
+                      "assets/images/Iced-Coffee_img-removebg-preview.png"),
+                  buildMenuItem(context, "MILKTEA",
+                      "assets/images/Milktea-removebg-preview.png"),
+                  buildMenuItem(context, "FRUIT SODA",
+                      "assets/images/FruitSOda-removebg-preview.png"),
+                  buildMenuItem(context, "FRUIT YOGURT",
+                      "assets/images/Fruit_yogurt-removebg-preview.png"),
+                  buildMenuItem(context, "WAFFLE",
+                      "assets/images/Waffle Oreo.png"),
+                  buildMenuItem(context, "PROMO PRODUCTS",
+                      "assets/images/promo.png"), // ✅ New button
+                ],
+              ),
             ),
 
             /// CANCEL ORDER
@@ -241,44 +187,52 @@ class _HomeMenuState extends State<HomeMenu> {
   Widget buildMenuItem(BuildContext context, String title, String imagePath) {
     return AnimatedScaleButton(
       onTap: () {
-        if (title.toUpperCase().contains("MILKTEA")) {
+        if (title == "MILKTEA") {
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) =>
-                  MilkteaScreen(diningLocation: widget.diningLocation),
+                  MilkteaScreen(diningLocation: diningLocation),
             ),
           );
-        } else if (title.toUpperCase().contains("COFFEE")) {
+        } else if (title == "ICED COFFEE") {
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) =>
-                  IcedCoffeeScreen(diningLocation: widget.diningLocation),
+                  IcedCoffeeScreen(diningLocation: diningLocation),
             ),
           );
-        } else if (title.toUpperCase().contains("SODA")) {
+        } else if (title == "FRUIT SODA") {
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) =>
-                  FruitSodaScreen(diningLocation: widget.diningLocation),
+                  FruitSodaScreen(diningLocation: diningLocation),
             ),
           );
-        } else if (title.toUpperCase().contains("YOGURT")) {
+        } else if (title == "FRUIT YOGURT") {
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) =>
-                  FruitYogurtScreen(diningLocation: widget.diningLocation),
+                  FruitYogurtScreen(diningLocation: diningLocation),
             ),
           );
-        } else if (title.toUpperCase().contains("WAFFLE")) {
+        } else if (title == "WAFFLE") {
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) =>
-                  WaffleScreen(diningLocation: widget.diningLocation),
+                  WaffleScreen(diningLocation: diningLocation),
+            ),
+          );
+        } else if (title == "PROMO PRODUCTS") {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  PromoProductsScreen(diningLocation: diningLocation),
             ),
           );
         }
@@ -302,13 +256,10 @@ class _HomeMenuState extends State<HomeMenu> {
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
-                child: Image.network( // ✅ Load product images from server
+                child: Image.asset(
                   imagePath,
                   fit: BoxFit.contain,
                   alignment: Alignment.center,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Image.asset('assets/images/default_product.png');
-                  },
                 ),
               ),
             ),
